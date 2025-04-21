@@ -4,22 +4,31 @@ import numpy as np
 class LSTMScene(Scene):
     def construct(self):
         # Title
-        title = Text("Mathematical Functions")
+        title = Text("Mathematical Functions", font_size=48)
         self.play(Write(title))
-        self.wait(1)
-        self.play(title.animate.to_edge(UP))
+        self.wait(3)
+        self.play(title.animate.to_edge(UP, buff=0.5))
+        self.wait(2)
         
         # Create axes
         axes = Axes(
             x_range=[-3, 3, 1],
             y_range=[-2, 6, 1],
             axis_config={"include_tip": True},
-        )
+            x_length=8,  # Specify explicit dimensions
+            y_length=6,
+        ).scale(0.8)  # Scale down the axes for better fit
         
         # Add labels using Text instead of MathTex
-        x_label = Text("x", font_size=24).next_to(axes.x_axis, DOWN)
-        y_label = Text("f(x)", font_size=24).next_to(axes.y_axis, LEFT)
+        x_label = Text("x", font_size=30).next_to(axes.x_axis, DOWN, buff=0.5)
+        y_label = Text("f(x)", font_size=30).next_to(axes.y_axis, LEFT, buff=0.5)
         labels = VGroup(x_label, y_label)
+        
+        # Animate with pauses
+        self.play(Create(axes))
+        self.wait(2)  # Added wait
+        self.play(Write(labels))
+        self.wait(2)  # Added wait
         
         # Graph a function
         quadratic = axes.plot(lambda x: x**2, color=BLUE)

@@ -65,16 +65,17 @@ class VideoMaker:
                 print("Manim check failed. Using automatic video generation.")
                 return None
                 
+            # Improved command with higher resolution
             command = ["manim", "render"]
             
             if self.preview:
                 command.append("-p")
             
-            # Map quality names
-            quality_map = {"low": "l", "medium": "m", "high": "h"}
-            q = self.quality.lower()
-            quality_flag = quality_map.get(q, q)
-            command.extend(["-q", quality_flag])
+            # Higher quality for better visibility
+            command.extend(["-q", "h"])  # Use higher quality
+            
+            # Use a larger resolution
+            command.extend(["--resolution", "1920,1080"])
             
             # Add flags to avoid LaTeX issues
             command.append("--disable_caching")
@@ -183,8 +184,8 @@ class VideoMaker:
         return slides
         
     def _create_slide_image(self, text, output_path, is_title=False):
-        """Create a single slide as an image"""
-        width, height = 1280, 720
+        """Create a single slide as an image with improved layout"""
+        width, height = 1920, 1080  # Increased resolution
         
         # Create image with gradient background
         image = Image.new('RGB', (width, height), color=(25, 25, 40))
@@ -194,12 +195,13 @@ class VideoMaker:
             # Try to load a nice font, fall back to default if not available
             try:
                 if is_title:
-                    font = ImageFont.truetype("arial.ttf", 60)
-                    small_font = ImageFont.truetype("arial.ttf", 30)
+                    font = ImageFont.truetype("arial.ttf", 80)  # Larger font
+                    small_font = ImageFont.truetype("arial.ttf", 40)
                 else:
-                    font = ImageFont.truetype("arial.ttf", 40)
-                    small_font = ImageFont.truetype("arial.ttf", 24)
+                    font = ImageFont.truetype("arial.ttf", 60)  # Larger font
+                    small_font = ImageFont.truetype("arial.ttf", 36)
             except:
+                # Fallback fonts
                 if is_title:
                     font = ImageFont.load_default()
                     small_font = ImageFont.load_default()
@@ -207,7 +209,7 @@ class VideoMaker:
                     font = ImageFont.load_default()
                     small_font = ImageFont.load_default()
             
-            # Add gradient
+            # Add gradient background
             for y in range(height):
                 r = int(25 + (y/height) * 30)
                 g = int(25 + (y/height) * 30)
@@ -215,38 +217,40 @@ class VideoMaker:
                 for x in range(width):
                     draw.point((x, y), fill=(r, g, b))
             
-            # Draw decorative elements
             if is_title:
-                # Title slide design
-                draw.rectangle([100, 100, width-100, height-100], 
-                              outline=(100, 150, 255), width=5)
+                # Title slide design with more space
+                draw.rectangle([150, 150, width-150, height-150], 
+                              outline=(100, 150, 255), width=8)
                 
                 # Add title text
-                draw.text((width//2, height//2-50), text, 
+                draw.text((width//2, height//2-100), text, 
                          font=font, fill=(255, 255, 255), anchor="mm")
                 
-                # Add subtitle
-                draw.text((width//2, height//2+50), 
+                # Add subtitle with more space
+                draw.text((width//2, height//2+100), 
                          "Mathematical Visualization", 
                          font=small_font, fill=(200, 200, 255), anchor="mm")
                          
                 # Add timestamp
                 timestamp = datetime.now().strftime("%Y-%m-%d")
-                draw.text((width//2, height-150), 
+                draw.text((width//2, height-200), 
                          timestamp, 
                          font=small_font, fill=(180, 180, 220), anchor="mm")
             else:
-                # Regular slide design with wrapped text
-                margin = 100
-                wrapper = textwrap.TextWrapper(width=60)
+                # Regular slide design with wrapped text and better spacing
+                margin = 200  # Increased margin
+                wrapper = textwrap.TextWrapper(width=40)  # Fewer words per line
                 wrapped_text = wrapper.fill(text)
                 lines = wrapped_text.split('\n')
                 
-                y_position = height//2 - (len(lines) * 30)//2
+                # Calculate position with more spacing between lines
+                line_height = 70  # Increased line height
+                y_position = height//2 - (len(lines) * line_height)//2
+                
                 for line in lines:
                     draw.text((width//2, y_position), line, 
                              font=font, fill=(255, 255, 255), anchor="mm")
-                    y_position += 50
+                    y_position += line_height
             
             # Save the image
             image.save(output_path)
@@ -277,15 +281,17 @@ class VideoMaker:
             
             # Run ffmpeg to create video
             cmd = [
-                "ffmpeg", "-y",
-                "-f", "concat",
-                "-safe", "0",
-                "-i", list_file,
-                "-vsync", "vfr",
-                "-pix_fmt", "yuv420p",
-                "-c:v", "libx264",
-                output_path
-            ]
+            "ffmpeg", "-y",
+            "-f", "concat",
+            "-safe", "0",
+            "-i", list_file,
+            "-vsync", "vfr",
+            "-pix_fmt", "yuv420p",
+            "-c:v", "libx264",
+            "-crf", "18",  # Higher quality (lower is better, 18-23 is good)
+            "-preset", "slow",  # Better compression
+            output_path
+        ]
             
             process = subprocess.run(cmd, 
                                     check=False, 
