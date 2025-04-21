@@ -1,352 +1,309 @@
-# Support Vector Machine (SVM) is a supervised machine learning algorithm used for classification and regression tasks. The main idea behind SVM is to find the optimal hyperplane that separates data points into different classes with the maximum margin. A hyperplane is a decision boundary that divides the feature space into distinct regions. The margin is the distance between the hyperplane and the nearest data point from either set, known as support vectors.
+# Certainly! Linear regression is a fundamental algorithm in machine learning used for predicting a continuous target variable based on one or more input features. It assumes a linear relationship between the input variables (features) and the output variable (target).
 # 
-# In a two-dimensional space, this hyperplane is a line; in three dimensions, it's a plane, and in higher dimensions, it's a hyperplane. SVM not only finds this hyperplane but also maximizes the margin around it, which helps in better generalization to unseen data.
+# ### Key Concepts:
 # 
-# For non-linearly separable data, SVM uses kernel functions to transform the input features into a higher-dimensional space where a linear separation might be possible. Common types of kernel functions include linear, polynomial, radial basis function (RBF), and sigmoid.
+# 1. **Linear Relationship**: The core assumption of linear regression is that there is a linear relationship between the input features and the target variable. This means that the change in the target variable is proportional to the change in the input features.
 # 
-# SVM is particularly effective in high-dimensional spaces and when the number of dimensions exceeds the number of samples. It is also robust to overfitting, especially in cases where the dimensionality of the input space is high.
+# 2. **Equation**: The simplest form of linear regression is simple linear regression, which involves one feature. The equation for simple linear regression is:
+#    \[
+#    y = mx + b
+#    \]
+#    where \( y \) is the predicted value, \( x \) is the feature, \( m \) is the slope of the line, and \( b \) is the intercept. For multiple linear regression, with more than one feature, the equation becomes:
+#    \[
+#    y = b_0 + b_1x_1 + b_2x_2 + ... + b_nx_n
+#    \]
+#    where \( b_0 \) is the intercept, and \( b_1, b_2, ..., b_n \) are the coefficients for each feature \( x_1, x_2, ..., x_n \).
+# 
+# 3. **Objective**: The main goal of linear regression is to find the best-fitting line (or hyperplane in the case of multiple features) that minimizes the difference between the actual values and the predicted values. This difference is often measured using a metric called Mean Squared Error (MSE).
+# 
+# 4. **Training Process**: During the training process, the model learns the optimal values of the coefficients \( b_0, b_1, ..., b_n \) by minimizing the MSE. This is typically done using an optimization algorithm like Gradient Descent.
+# 
+# 5. **Applications**: Linear regression is widely used in various fields such as finance (predicting stock prices), economics (forecasting GDP), and social sciences (understanding relationships between variables).
+# 
+# 6. **Assumptions**: Linear regression makes several assumptions about the data, including linearity, independence of errors, homoscedasticity (constant variance of errors), and normality of error distribution. These assumptions should be checked before applying linear regression to ensure the model's validity.
+# 
+# ### Example:
+# 
+# Suppose you want to predict a house's price based on its size. In this case, the size of the house would be your feature \( x \), and the price would be your target variable \( y \). Linear regression would help you find the best line that fits the data points, allowing you to predict the price of a house given its size.
+# 
+# Does this help explain linear regression? If you have any specific questions or need further clarification, feel free to ask!
 
 from manim import *
-import random
 import numpy as np
 
 class LSTMScene(Scene):
     def construct(self):
         # Create the subtitle
-        subtitle = Text("Introduction to SVM").shift(np.array([0, 2.5, 0]))
+        subtitle = Text("Understanding Data Points").shift(np.array([0, 3, 0]))
         self.play(Write(subtitle))
         self.wait(1)
         # Create a circle
         circle = Circle(radius=0.5, color=BLUE).shift(np.array([0, 0, 0]))
         self.play(Create(circle))
         self.wait(1)
-        # Add text above the circle
-        svm_text = Text("Support Vector Machine").shift(np.array([0, 1.5, 0]))
-        self.play(Write(svm_text))
+        # Add a Text object above the circle
+        text = Text("Data Point").shift(np.array([0, 0.6, 0]))
+        self.play(Write(text))
         self.wait(1)
-        # Create arrows entering from the left
-        arrow_left_1 = Arrow(start=np.array([-2, 0.5, 0]), end=np.array([-0.5, 0.5, 0]), color=GREEN)
-        arrow_left_2 = Arrow(start=np.array([-2, -0.5, 0]), end=np.array([-0.5, -0.5, 0]), color=GREEN)
-        self.play(Create(arrow_left_1), Create(arrow_left_2))
-        self.wait(1)
-        # Create arrow exiting from the right side of the circle
-        arrow_right = Arrow(start=np.array([0.5, 0, 0]), end=np.array([2, 0, 0]), color=RED)
-        self.play(Create(arrow_right))
+        # Create a small dot at the center of the circle
+        dot = Dot(point=np.array([0, 0, 0]), radius=0.05, color=RED)
+        self.play(Create(dot))
         self.wait(2)
 
 class LSTMScene(Scene):
     def construct(self):
         # Create the subtitle
-        subtitle = Text("Data Points in SVM").shift(np.array([0, 2.5, 0]))
+        subtitle = Text("Setting Up Axes").shift(np.array([0, 3.5, 0]))
         self.play(Write(subtitle))
         self.wait(1)
-        # Set seed for reproducibility
-        np.random.seed(42)
-        # Generate random positions for red dots
-        red_positions = np.random.uniform(low=np.array([-3, -2, 0]), high=np.array([-1, 2, 0]), size=(np.array([5, 2, 0])))
-        red_dots = [Dot(point=np.array([pos[0], pos[1], 0]), color=RED, radius=0.05) for pos in red_positions]
-        # Generate random positions for blue dots
-        blue_positions = np.random.uniform(low=np.array([1, -2, 0]), high=np.array([3, 2, 0]), size=(np.array([5, 2, 0])))
-        blue_dots = [Dot(point=np.array([pos[0], pos[1], 0]), color=BLUE, radius=0.05) for pos in blue_positions]
-        # Create dots
-        self.play(*[Create(dot) for dot in red_dots], *[Create(dot) for dot in blue_dots])
+        # Create x-axis
+        x_axis = Line(start=np.array([-4, 0, 0]), end=np.array([4, 0, 0]))
+        self.play(Create(x_axis))
+        self.wait(1)
+        # Create y-axis
+        y_axis = Line(start=np.array([0, -3, 0]), end=np.array([0, 3, 0]))
+        self.play(Create(y_axis))
+        self.wait(1)
+        # Label x-axis
+        x_label = Text("X").shift(np.array([4.2, 0, 0]))
+        self.play(Write(x_label))
+        self.wait(1)
+        # Label y-axis
+        y_label = Text("Y").shift(np.array([0, 3.2, 0]))
+        self.play(Write(y_label))
         self.wait(2)
 
 class LSTMScene(Scene):
     def construct(self):
         # Create the subtitle
-        subtitle = Text("Simple Decision Boundary").shift(np.array([0, 2.5, 0]))
+        subtitle = Text("Plotting Random Data").shift(UP*2.5)
         self.play(Write(subtitle))
         self.wait(1)
-        # Set seed for reproducibility
-        np.random.seed(42)
-        # Generate random positions for red dots
-        red_positions = np.random.uniform(low=np.array([-3, -2, 0]), high=np.array([-1, 2, 0]), size=(np.array([5, 2, 0])))
-        red_dots = [Dot(point=np.array([pos[0], pos[1], 0]), color=RED, radius=0.05) for pos in red_positions]
-        self.play(*[Create(dot) for dot in red_dots])
+        # Create axes
+        x_axis = Line(start=np.array([-4, 0, 0]), end=np.array([4, 0, 0]))
+        y_axis = Line(start=np.array([0, -3, 0]), end=np.array([0, 3, 0]))
+        self.play(Create(x_axis), Create(y_axis))
         self.wait(1)
-        # Generate random positions for blue dots
-        blue_positions = np.random.uniform(low=np.array([1, -2, 0]), high=np.array([3, 2, 0]), size=(np.array([5, 2, 0])))
-        blue_dots = [Dot(point=np.array([pos[0], pos[1], 0]), color=BLUE, radius=0.05) for pos in blue_positions]
-        self.play(*[Create(dot) for dot in blue_dots])
+        # Label axes
+        x_label = Text("X").shift(RIGHT*4.2)
+        y_label = Text("Y").shift(UP*3.2)
+        self.play(Write(x_label), Write(y_label))
         self.wait(1)
-        # Draw a decision boundary line
-        decision_boundary = Line(start=np.array([-3, 0, 0]), end=np.array([3, 0, 0]), color=GREEN)
-        self.play(Create(decision_boundary))
+        # Generate random data points properly
+        np.random.seed(42)  # For reproducibility
+        x_values = np.random.uniform(-3, 3, 10)
+        y_values = 0.5*x_values + 0.8 + np.random.normal(0, 0.4, 10)
+        # Create dots at each point
+        dots = [Dot(np.array([x, y, 0]), radius=0.05) for x, y in zip(x_values, y_values)]
+        self.play(*[Create(dot) for dot in dots])
         self.wait(2)
 
 class LSTMScene(Scene):
     def construct(self):
         # Create the subtitle
-        subtitle = Text("Identifying Support Vectors").shift(np.array([0, 2.5, 0]))
+        subtitle = Text("Constant Prediction Line").shift(UP*2.5)
         self.play(Write(subtitle))
         self.wait(1)
-        # Set seed for reproducibility
-        np.random.seed(42)
-        # Generate random positions for red dots
-        red_positions = np.array([
-            [np.np.random.uniform(-3, -1), np.np.random.uniform(-2, 2), 0] for _ in range(5)
-        ])
-        # Generate random positions for blue dots
-        blue_positions = np.array([
-            [np.np.random.uniform(1, 3), np.np.random.uniform(-2, 2), 0] for _ in range(5)
-        ])
-        # Create red dots
-        red_dots = [Dot(point=red_positions[i], color=RED, radius=0.05) for i in range(5)]
-        # Create blue dots
-        blue_dots = [Dot(point=blue_positions[i], color=BLUE, radius=0.05) for i in range(5)]
-        # Draw red and blue dots
-        self.play(*[Create(dot) for dot in red_dots + blue_dots])
+        # Create axes
+        x_axis = Line(start=np.array([-4, 0, 0]), end=np.array([4, 0, 0]))
+        y_axis = Line(start=np.array([0, -3, 0]), end=np.array([0, 3, 0]))
+        self.play(Create(x_axis), Create(y_axis))
         self.wait(1)
-        # Draw a green line from (-3, 0, 0) to (3, 0, 0)
-        line = Line(start=np.array([-3, 0, 0]), end=np.array([3, 0, 0]), color=GREEN)
+        # Label axes
+        x_label = Text("X").shift(RIGHT*4.2)
+        y_label = Text("Y").shift(UP*3.2)
+        self.play(Write(x_label), Write(y_label))
+        self.wait(1)
+        # Generate random data points properly
+        np.random.seed(42)  # For reproducibility
+        x_values = np.random.uniform(-3, 3, 10)
+        y_values = 0.5*x_values + 0.8 + np.random.normal(0, 0.4, 10)
+        # Create dots at each point
+        dots = [Dot(np.array([x, y, 0]), radius=0.05) for x, y in zip(x_values, y_values)]
+        self.play(*[Create(dot) for dot in dots])
+        self.wait(1)
+        # Draw a constant prediction line
+        const_line = Line(start=np.array([-4, 0.8, 0]), end=np.array([4, 0.8, 0]), color=RED)
+        self.play(Create(const_line))
+        self.wait(2)
+
+class LSTMScene(Scene):
+    def construct(self):
+        # Create the subtitle
+        subtitle = Text("Simple Linear Relationship").shift(UP*2.5)
+        self.play(Write(subtitle))
+        self.wait(1)
+        # Create axes
+        x_axis = Line(start=np.array([-4, 0, 0]), end=np.array([4, 0, 0]))
+        y_axis = Line(start=np.array([0, -3, 0]), end=np.array([0, 3, 0]))
+        self.play(Create(x_axis), Create(y_axis))
+        self.wait(1)
+        # Label axes
+        x_label = Text("X").shift(RIGHT*4.2)
+        y_label = Text("Y").shift(UP*3.2)
+        self.play(Write(x_label), Write(y_label))
+        self.wait(1)
+        # Generate random data points properly
+        np.random.seed(42)  # For reproducibility
+        x_values = np.random.uniform(-3, 3, 10)
+        y_values = 0.5*x_values + 0.8 + np.random.normal(0, 0.4, 10)
+        # Create dots at each point
+        dots = [Dot(np.array([x, y, 0]), radius=0.05) for x, y in zip(x_values, y_values)]
+        self.play(*[Create(dot) for dot in dots])
+        self.wait(1)
+        # Draw a trend line
+        line_start = np.array([-4, 0.8-0.5*(-4), 0])
+        line_end = np.array([4, 0.8+0.5*4, 0])
+        trend_line = Line(start=line_start, end=line_end, color=YELLOW)
+        self.play(Create(trend_line))
+        self.wait(2)
+
+class LSTMScene(Scene):
+    def construct(self):
+        # Create the subtitle
+        subtitle = Text("Linear Equation Representation").shift(UP*3.5)
+        self.play(Write(subtitle))
+        self.wait(1)
+        # Create axes
+        x_axis = Line(start=np.array([-4, 0, 0]), end=np.array([4, 0, 0]))
+        y_axis = Line(start=np.array([0, -3, 0]), end=np.array([0, 3, 0]))
+        self.play(Create(x_axis), Create(y_axis))
+        self.wait(1)
+        # Label axes
+        x_label = Text("X").shift(RIGHT*4.2)
+        y_label = Text("Y").shift(UP*3.2)
+        self.play(Write(x_label), Write(y_label))
+        self.wait(1)
+        # Generate random data points properly
+        np.random.seed(42)  # For reproducibility
+        x_values = np.random.uniform(-3, 3, 10)
+        y_values = 0.5*x_values + 0.8 + np.random.normal(0, 0.4, 10)
+        # Create dots at each point
+        dots = [Dot(np.array([x, y, 0]), radius=0.05) for x, y in zip(x_values, y_values)]
+        self.play(*[Create(dot) for dot in dots])
+        self.wait(1)
+        # Draw the line
+        line_start = np.array([-4, 0.8-0.5*(-4), 0])
+        line_end = np.array([4, 0.8+0.5*4, 0])
+        line = Line(start=line_start, end=line_end, color=YELLOW)
         self.play(Create(line))
         self.wait(1)
-        # Find the closest red and blue dots to the line
-        def distance_to_line(point):
-            return abs(point[1])
-        closest_red_dot = min(red_dots, key=lambda dot: distance_to_line(dot.get_center()))
-        closest_blue_dot = min(blue_dots, key=lambda dot: distance_to_line(dot.get_center()))
-        # Highlight the closest red and blue dots with yellow outlines
-        closest_red_dot.set_stroke(YELLOW, width=3)
-        closest_blue_dot.set_stroke(YELLOW, width=3)
-        self.play(closest_red_dot.animate.set_stroke(YELLOW, width=3),
-                  closest_blue_dot.animate.set_stroke(YELLOW, width=3))
+        # Label the line
+        line_label = Text("y=0.5x+0.8").shift(UP*3.2)
+        self.play(Write(line_label))
         self.wait(2)
 
 class LSTMScene(Scene):
     def construct(self):
         # Create the subtitle
-        subtitle = Text("Calculating Margin").shift(np.array([0, 2.5, 0]))
+        subtitle = Text("Calculating Best Fit Line").shift(np.array([0, 3.2, 0]))
         self.play(Write(subtitle))
         self.wait(1)
-        # Set seed for reproducibility
-        np.random.seed(42)
-        # Generate random positions for red dots
-        red_positions = np.random.uniform(low=np.array([-3, -2, 0]), high=np.array([-1, 2, 0]), size=(np.array([5, 3, 0])))
-        red_dots = [Dot(point, radius=0.05, color=RED) for point in red_positions]
-        self.play(*[Create(dot) for dot in red_dots])
+        # Create axes
+        x_axis = Line(start=np.array([-4, 0, 0]), end=np.array([4, 0, 0]))
+        y_axis = Line(start=np.array([0, -3, 0]), end=np.array([0, 3, 0]))
+        self.play(Create(x_axis), Create(y_axis))
         self.wait(1)
-        # Generate random positions for blue dots
-        blue_positions = np.random.uniform(low=np.array([1, -2, 0]), high=np.array([3, 2, 0]), size=(np.array([5, 3, 0])))
-        blue_dots = [Dot(point, radius=0.05, color=BLUE) for point in blue_positions]
-        self.play(*[Create(dot) for dot in blue_dots])
+        # Label axes
+        x_label = Text("X").shift(np.array([4.2, 0, 0]))
+        y_label = Text("Y").shift(np.array([0, 3.2, 0]))
+        self.play(Write(x_label), Write(y_label))
         self.wait(1)
-        # Draw a straight line from (-3, 0, 0) to (3, 0, 0) in green
-        green_line = Line(start=np.array([-3, 0, 0]), end=np.array([3, 0, 0]), color=GREEN)
-        self.play(Create(green_line))
+        # Generate random data points properly
+        np.random.seed(42)  # For reproducibility
+        x_values = np.random.uniform(-3, 3, 10)
+        y_values = 0.5 * x_values + 0.8 + np.random.normal(0, 0.4, 10)
+        # Create dots at each point
+        dots = [Dot(np.array([x, y, 0]), radius=0.05) for x, y in zip(x_values, y_values)]
+        self.play(*[Create(dot) for dot in dots])
         self.wait(1)
-        # Find the closest red and blue dots to the line
-        closest_red_dot = min(red_dots, key=lambda dot: abs(dot.get_center()[1]))
-        closest_blue_dot = min(blue_dots, key=lambda dot: abs(dot.get_center()[1]))
-        # Highlight the closest red and blue dots with yellow outlines
-        closest_red_dot.set_stroke(color=YELLOW, width=5)
-        closest_blue_dot.set_stroke(color=YELLOW, width=5)
-        self.play(closest_red_dot.animate.set_stroke(color=YELLOW, width=5),
-                  closest_blue_dot.animate.set_stroke(color=YELLOW, width=5))
+        # Draw a best fit line
+        coefficients = np.polyfit(x_values, y_values, 1)
+        slope, intercept = coefficients
+        best_fit_line = Line(start=np.array([-4, slope*(-4) + intercept, 0]), end=np.array([4, slope*4 + intercept, 0]), color=YELLOW)
+        self.play(Create(best_fit_line))
         self.wait(1)
-        # Calculate the margin
-        margin_upper = max(closest_red_dot.get_center()[1], closest_blue_dot.get_center()[1])
-        margin_lower = min(closest_red_dot.get_center()[1], closest_blue_dot.get_center()[1])
-        # Draw two parallel dashed lines equidistant from the green line
-        upper_support_vector_line = DashedLine(start=np.array([-3, margin_upper, 0]), end=np.array([3, margin_upper, 0]), color=WHITE)
-        lower_support_vector_line = DashedLine(start=np.array([-3, margin_lower, 0]), end=np.array([3, margin_lower, 0]), color=WHITE)
-        self.play(Create(upper_support_vector_line), Create(lower_support_vector_line))
+        # Display the equation of the line
+        equation = Text(f"f(x) = {slope:.2f}x + {intercept:.2f}").shift(np.array([0, 3.2, 0]))
+        self.play(Transform(subtitle, equation))
         self.wait(2)
 
 class LSTMScene(Scene):
     def construct(self):
         # Create the subtitle
-        subtitle = Text("Objective of SVM").shift(np.array([0, 2.5, 0]))
+        subtitle = Text("Visualizing Prediction Errors").shift(np.array([0, 3.2, 0]))
         self.play(Write(subtitle))
         self.wait(1)
-        # Set seed for reproducibility
-        np.random.seed(42)
-        # Generate random positions for red dots
-        red_positions = np.random.uniform(low=np.array([-3, -2, 0]), high=np.array([-1, 2, 0]), size=(np.array([5, 3, 0])))
-        red_dots = [Dot(point, radius=0.05, color=RED) for point in red_positions]
-        self.play(*[Create(dot) for dot in red_dots])
+        # Create axes
+        x_axis = Line(start=np.array([-4, 0, 0]), end=np.array([4, 0, 0]))
+        y_axis = Line(start=np.array([0, -3, 0]), end=np.array([0, 3, 0]))
+        self.play(Create(x_axis), Create(y_axis))
         self.wait(1)
-        # Generate random positions for blue dots
-        blue_positions = np.random.uniform(low=np.array([1, -2, 0]), high=np.array([3, 2, 0]), size=(np.array([5, 3, 0])))
-        blue_dots = [Dot(point, radius=0.05, color=BLUE) for point in blue_positions]
-        self.play(*[Create(dot) for dot in blue_dots])
+        # Label axes
+        x_label = Text("X").shift(np.array([4.2, 0, 0]))
+        y_label = Text("Y").shift(np.array([0, 3.2, 0]))
+        self.play(Write(x_label), Write(y_label))
         self.wait(1)
-        # Draw the green line
-        green_line = Line(start=np.array([-3, 0, 0]), end=np.array([3, 0, 0]), color=GREEN)
-        self.play(Create(green_line))
+        # Generate random data points properly
+        np.random.seed(42)  # For reproducibility
+        x_values = np.random.uniform(-3, 3, 10)
+        y_values = 0.5 * x_values + 0.8 + np.random.normal(0, 0.4, 10)
+        # Create dots at each point
+        dots = [Dot(point=np.array([x, y, 0]), radius=0.05) for x, y in zip(x_values, y_values)]
+        self.play(*[Create(dot) for dot in dots])
         self.wait(1)
-        # Find the closest red and blue dots to the green line
-        closest_red_dot = min(red_dots, key=lambda dot: abs(dot.get_center()[1]))
-        closest_blue_dot = min(blue_dots, key=lambda dot: abs(dot.get_center()[1]))
-        # Highlight the closest dots with yellow outlines
-        closest_red_dot.set_stroke(YELLOW, width=3)
-        closest_blue_dot.set_stroke(YELLOW, width=3)
-        self.play(closest_red_dot.animate.set_stroke(YELLOW, width=3), closest_blue_dot.animate.set_stroke(YELLOW, width=3))
+        # Draw the best-fit line
+        coefficients = np.polyfit(x_values, y_values, 1)
+        slope, intercept = coefficients
+        best_fit_line = Line(start=np.array([-4, slope*(-4) + intercept, 0]), end=np.array([4, slope*4 + intercept, 0]), color=YELLOW)
+        self.play(Create(best_fit_line))
         self.wait(1)
-        # Calculate positions for the support vectors
-        upper_support_vector = np.array([0, 2, 0])
-        lower_support_vector = np.array([0, -2, 0])
-        # Draw the upper dashed support vector line
-        upper_support_line = DashedLine(start=np.array([-3, 2, 0]), end=np.array([3, 2, 0]), color=WHITE)
-        self.play(Create(upper_support_line))
+        # Display the equation of the line
+        equation = Text(f"f(x) = {slope:.2f}x + {intercept:.2f}").shift(np.array([0, 3.5, 0]))
+        self.play(Write(equation))
         self.wait(1)
-        # Draw the lower dashed support vector line
-        lower_support_line = DashedLine(start=np.array([-3, -2, 0]), end=np.array([3, -2, 0]), color=WHITE)
-        self.play(Create(lower_support_line))
+        # Highlight the difference between the predicted line and the actual data points
+        for x, y, dot in zip(x_values, y_values, dots):
+            predicted_y = slope * x + intercept
+            error_line = DashedLine(start=np.array([x, y, 0]), end=np.array([x, predicted_y, 0]), color=RED)
+            self.play(Create(error_line))
         self.wait(2)
 
 class LSTMScene(Scene):
     def construct(self):
         # Create the subtitle
-        subtitle = Text("Handling Non-linear Data").shift(np.array([0, 2.5, 0]))
+        subtitle = Text("Goal of Linear Regression").shift(np.array([0, 3.5, 0]))
         self.play(Write(subtitle))
         self.wait(1)
-        # Set seed for reproducibility
-        np.random.seed(42)
-        # Generate random positions for red dots
-        red_positions = np.random.uniform(low=np.array([-3, -2, 0]), high=np.array([-1, 2, 0]), size=(np.array([5, 2, 0])))
-        red_positions = np.hstack((red_positions, np.zeros((np.array([5, 1, 0])))))
-        # Generate random positions for blue dots
-        blue_positions = np.random.uniform(low=np.array([1, -2, 0]), high=np.array([3, 2, 0]), size=(np.array([5, 2, 0])))
-        blue_positions = np.hstack((blue_positions, np.zeros((np.array([5, 1, 0])))))
-        # Create red dots
-        red_dots = [Dot(point=position, color=RED, radius=0.05) for position in red_positions]
-        self.play(*[Create(dot) for dot in red_dots])
+        # Create axes
+        x_axis = Line(start=np.array([-4, 0, 0]), end=np.array([4, 0, 0]))
+        y_axis = Line(start=np.array([0, -3, 0]), end=np.array([0, 3, 0]))
+        self.play(Create(x_axis), Create(y_axis))
         self.wait(1)
-        # Create blue dots
-        blue_dots = [Dot(point=position, color=BLUE, radius=0.05) for position in blue_positions]
-        self.play(*[Create(dot) for dot in blue_dots])
+        # Label axes
+        x_label = Text("X").shift(np.array([4.2, 0, 0]))
+        y_label = Text("Y").shift(np.array([0, 3.2, 0]))
+        self.play(Write(x_label), Write(y_label))
         self.wait(1)
-        # Draw a straight line from (-3, 0, 0) to (3, 0, 0) in green
-        green_line = Line(start=np.array([-3, 0, 0]), end=np.array([3, 0, 0]), color=GREEN)
-        self.play(Create(green_line))
+        # Generate random data points properly
+        np.random.seed(42)  # For reproducibility
+        x_values = np.random.uniform(-3, 3, 10)
+        y_values = 0.5 * x_values + 0.8 + np.random.normal(0, 0.4, 10)
+        # Create dots at each point
+        dots = [Dot(point=np.array([x, y, 0]), radius=0.05) for x, y in zip(x_values, y_values)]
+        self.play(*[Create(dot) for dot in dots])
         self.wait(1)
-        # Find the closest red and blue dots to the green line
-        closest_red_dot = min(red_dots, key=lambda dot: abs(dot.get_center()[1]))
-        closest_blue_dot = min(blue_dots, key=lambda dot: abs(dot.get_center()[1]))
-        # Highlight the closest red and blue dots with yellow outlines
-        closest_red_dot.set_stroke(YELLOW, width=3)
-        closest_blue_dot.set_stroke(YELLOW, width=3)
-        self.play(closest_red_dot.animate.set_stroke(YELLOW, width=3), closest_blue_dot.animate.set_stroke(YELLOW, width=3))
+        # Draw the best-fit line
+        coefficients = np.polyfit(x_values, y_values, 1)
+        slope, intercept = coefficients
+        best_fit_line = Line(start=np.array([-4, slope*(-4) + intercept, 0]), end=np.array([4, slope*4 + intercept, 0]), color=YELLOW)
+        self.play(Create(best_fit_line))
         self.wait(1)
-        # Draw two parallel dashed lines equidistant from the green line
-        upper_support_vector = np.array([0, 1, 0])
-        lower_support_vector = np.array([0, -1, 0])
-        upper_line = DashedLine(start=np.array([-3, 1, 0]), end=np.array([3, 1, 0]), color=WHITE)
-        lower_line = DashedLine(start=np.array([-3, -1, 0]), end=np.array([3, -1, 0]), color=WHITE)
-        self.play(Create(upper_line), Create(lower_line))
-        self.wait(1)
-        # Introduce a curved line from (-3, -2, 0) to (3, 2, 0) in red to represent a non-linear decision boundary
-        non_linear_boundary = ParametricFunction(
-            lambda t: np.array([t, np.sin(t * 2), 0]),
-            t_range=[-3, 3],
-            color=RED,
-        )
-        self.play(Create(non_linear_boundary))
+        # Display the equation of the line
+        equation_text = Text(f"f(x) = {slope:.2f}x + {intercept:.2f}").shift(np.array([0, 3.2, 0]))
+        self.play(Transform(y_label, equation_text))
         self.wait(2)
-
-class LSTMScene(Scene):
-    def construct(self):
-        # Create the subtitle
-        subtitle = Text("Kernel Trick Explained").shift(np.array([0, -3.5, 0]))
-        self.play(Write(subtitle))
-        self.wait(1)
-        # Set seed for reproducibility
-        np.random.seed(42)
-        # Generate random positions for red dots
-        red_positions = np.random.uniform(low=np.array([-3, -2, 0]), high=np.array([-1, 2, 0]), size=(np.array([5, 2, 0])))
-        red_dots = [Dot(point=np.array([pos[0], pos[1], 0]), color=RED, radius=0.05) for pos in red_positions]
-        self.play(*[Create(dot) for dot in red_dots])
-        self.wait(1)
-        # Generate random positions for blue dots
-        blue_positions = np.random.uniform(low=np.array([1, -2, 0]), high=np.array([3, 2, 0]), size=(np.array([5, 2, 0])))
-        blue_dots = [Dot(point=np.array([pos[0], pos[1], 0]), color=BLUE, radius=0.05) for pos in blue_positions]
-        self.play(*[Create(dot) for dot in blue_dots])
-        self.wait(1)
-        # Draw a straight line from (-3, 0, 0) to (3, 0, 0) in green
-        green_line = Line(start=np.array([-3, 0, 0]), end=np.array([3, 0, 0]), color=GREEN)
-        self.play(Create(green_line))
-        self.wait(1)
-        # Find the closest red and blue dots to the line
-        def distance_to_line(point):
-            return abs(point[1])
-        closest_red_dot = min(red_dots, key=lambda dot: distance_to_line(dot.get_center()))
-        closest_blue_dot = min(blue_dots, key=lambda dot: distance_to_line(dot.get_center()))
-        # Highlight the closest red and blue dots with yellow outlines
-        closest_red_dot.set_stroke(YELLOW, width=3)
-        closest_blue_dot.set_stroke(YELLOW, width=3)
-        self.play(closest_red_dot.animate.set_stroke(YELLOW, width=3), closest_blue_dot.animate.set_stroke(YELLOW, width=3))
-        self.wait(1)
-        # Draw two parallel dashed lines equidistant from the green line
-        upper_support_vector = np.array([0, 1, 0])
-        lower_support_vector = np.array([0, -1, 0])
-        upper_line = DashedLine(start=np.array([-3, 1, 0]), end=np.array([3, 1, 0]), color=WHITE)
-        lower_line = DashedLine(start=np.array([-3, -1, 0]), end=np.array([3, -1, 0]), color=WHITE)
-        self.play(Create(upper_line), Create(lower_line))
-        self.wait(1)
-        # Add a Text object at position (0, 2.5, 0) saying 'Kernel Trick'
-        kernel_trick_text = Text("Kernel Trick").shift(np.array([0, 2.5, 0]))
-        self.play(Write(kernel_trick_text))
-        self.wait(1)
-        # Introduce a curved line from (-3, -2, 0) to (3, 2, 0) in red
-        curve = ParametricFunction(lambda t: np.array([t, np.sin(t*2), 0]), t_range=[-3, 3], color=RED)
-        self.play(Create(curve))
-        self.wait(1)
-        # Add a Text object at position (0, -2.5, 0) saying 'Transforms Data'
-        transforms_data_text = Text("Transforms Data").shift(np.array([0, -2.5, 0]))
-        self.play(Write(transforms_data_text))
-        self.wait(2)
-
-class LSTMScene(Scene):
-    def construct(self):
-        # Create the subtitle
-        subtitle = Text("Higher Dimensional Hyperplanes").shift(DOWN*3.5)
-        self.play(Write(subtitle))
-        self.wait(1)
-        # Set seed for reproducibility
-        np.random.seed(42)
-        # Generate random positions for red dots
-        red_positions = np.random.uniform(low=np.array([-3, -2, 0]), high=np.array([-1, 2, 0]), size=(np.array([5, 2, 0])))
-        red_dots = [Dot(np.append(pos, 0), radius=0.07, color=RED) for pos in red_positions]
-        self.play(*[Create(dot) for dot in red_dots])
-        self.wait(1)
-        # Generate random positions for blue dots
-        blue_positions = np.random.uniform(low=np.array([1, -2, 0]), high=np.array([3, 2, 0]), size=(np.array([5, 2, 0])))
-        blue_dots = [Dot(np.append(pos, 0), radius=0.07, color=BLUE) for pos in blue_positions]
-        self.play(*[Create(dot) for dot in blue_dots])
-        self.wait(1)
-        # Draw a straight line from (-3, 0, 0) to (3, 0, 0) in green
-        green_line = Line(start=np.array([-3, 0, 0]), end=np.array([3, 0, 0]), color=GREEN)
-        self.play(Create(green_line))
-        self.wait(1)
-        # Find the closest red and blue dots to the line
-        def distance_to_line(point, line_start, line_end):
-            return np.abs((line_end[1] - line_start[1]) * point[0] - (line_end[0] - line_start[0]) * point[1] + line_end[0] * line_start[1] - line_end[1] * line_start[0]) / np.sqrt((line_end[1] - line_start[1])**2 + (line_end[0] - line_start[0])**2)
-        closest_red_dot = min(red_dots, key=lambda dot: distance_to_line(dot.get_center()[:2], [-3, 0], [3, 0]))
-        closest_blue_dot = min(blue_dots, key=lambda dot: distance_to_line(dot.get_center()[:2], [-3, 0], [3, 0]))
-        # Highlight the closest red and blue dots with yellow outlines
-        closest_red_dot.set_stroke(YELLOW, width=5)
-        closest_blue_dot.set_stroke(YELLOW, width=5)
-        self.play(closest_red_dot.animate.set_stroke(YELLOW, width=5), closest_blue_dot.animate.set_stroke(YELLOW, width=5))
-        self.wait(1)
-        # Calculate support vectors
-        upper_support_vector = np.array([0, 2, 0])
-        lower_support_vector = np.array([0, -2, 0])
-        # Draw two parallel dashed lines equidistant from the green line
-        upper_dashed_line = DashedLine(start=np.array([-3, 1, 0]), end=np.array([3, 1, 0]), color=GREEN)
-        lower_dashed_line = DashedLine(start=np.array([-3, -1, 0]), end=np.array([3, -1, 0]), color=GREEN)
-        self.play(Create(upper_dashed_line), Create(lower_dashed_line))
-        self.wait(1)
-        # Add a Text object at position (0, 2.5, 0) saying 'Hyperplane in Higher Dimensions'
-        title_text = Text("Hyperplane in Higher Dimensions").shift(UP*2.5)
-        self.play(Write(title_text))
-        self.wait(1)
-        # Introduce a curved line from (-3, -2, 0) to (3, 2, 0) in red
-        curve = ParametricFunction(lambda t: np.array([t, np.sin(t*PI/3), 0]), t_range=[-3, 3], color=RED)
-        self.play(Create(curve))
-        self.wait(1)
-        # Add a Text object at position (0, -2.5, 0) saying 'Separates Classes Efficiently'
-        bottom_text = Text("Separates Classes Efficiently").shift(DOWN*2.5)
-        self.play(Write(bottom_text))
+        # Add a Text object below the axes saying 'Minimize Error'
+        minimize_error_text = Text("Minimize Error").shift(np.array([0, -3.5, 0]))
+        self.play(Write(minimize_error_text))
         self.wait(2)
