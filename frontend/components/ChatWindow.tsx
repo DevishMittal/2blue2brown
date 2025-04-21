@@ -4,9 +4,10 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Send, User, Bot, X } from "lucide-react";
+import { Send, User, Bot, X, Calendar } from "lucide-react";
 import Image from "next/image";
 import { Session, Message } from "@/lib/types";
+import ReactMarkdown from 'react-markdown';
 
 const sendMessageToBackend = async (message: Message): Promise<{message: string, video_url: string | null}> => {
   console.log("Sending message to backend...");
@@ -45,6 +46,38 @@ const sendMessageToBackend = async (message: Message): Promise<{message: string,
       video_url: null
     };
   }
+};
+
+// Helper function to format dates
+const formatDate = (dateString: string) => {
+  try {
+    const date = new Date(dateString);
+    
+    // Format: April 21, 2023 • 14:30
+    return date.toLocaleString('en-US', {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    }).replace(',', ' •');
+  } catch {
+    // Return the original string if parsing fails
+    return dateString;
+  }
+};
+
+// Helper function to generate a better session title
+const generateSessionTitle = (session: Session | null) => {
+  if (!session) return "New Chat";
+  
+  // If title is already custom (not default format), return it
+  if (!session.title.startsWith("Session ")) {
+    return session.title;
+  }
+  
+  return `Chat Session`;
 };
 
 export default function ChatWindow({
@@ -178,9 +211,18 @@ export default function ChatWindow({
 
   return (
     <div className="flex flex-col max-w-[1200px] bg-zinc-950">
-      <div className="border-b border-zinc-800 p-4 h-17.25 text-sm font-semibold text-zinc-200">
-        <div>{currentSession?.title}</div>
-        <div>{currentSession?.time_created}</div>
+      <div className="border-b border-zinc-800 p-4 h-17.25 flex items-center justify-between">
+        <div className="flex flex-col">
+          <div className="text-lg font-semibold text-zinc-100">
+            {generateSessionTitle(currentSession)}
+          </div>
+          {currentSession?.time_created && (
+            <div className="text-xs text-zinc-400 flex items-center mt-1">
+              <Calendar className="h-3 w-3 mr-1" /> 
+              {formatDate(currentSession.time_created)}
+            </div>
+          )}
+        </div>
       </div>
       <div className="flex-1 overflow-y-auto px-4 py-6 space-y-6">
         {!newSession &&
@@ -200,10 +242,11 @@ export default function ChatWindow({
                       : "bg-zinc-900 text-zinc-100"
                     }`}
                 >
-                  <div
-                    className="prose prose-invert max-w-none"
-                    dangerouslySetInnerHTML={{ __html: msg.message || '' }}
-                  />
+                  <div className="prose prose-invert prose-pre:bg-zinc-800/80 prose-pre:p-4 prose-pre:rounded-md prose-pre:border prose-pre:border-zinc-700 prose-code:text-green-400 prose-code:bg-zinc-800 prose-code:px-1 prose-code:rounded-sm prose-headings:text-zinc-100 prose-p:text-zinc-200 prose-a:text-blue-400 prose-strong:text-zinc-100 prose-em:text-zinc-200 max-w-none">
+                    <ReactMarkdown>
+                      {msg.message || ''}
+                    </ReactMarkdown>
+                  </div>
 
                   {msg.imageUrl && (
                     <div className="mt-3">

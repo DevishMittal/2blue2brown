@@ -3,8 +3,37 @@
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Session, Message } from "@/lib/types";
-import { Plus } from "lucide-react";
+import { Plus, MessageSquare } from "lucide-react";
 import React, { useState, useEffect } from "react";
+
+// Helper function to format dates
+const formatDate = (dateString: string) => {
+  try {
+    const date = new Date(dateString);
+    
+    // Format: Apr 21, 2023 • 14:30
+    return date.toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    }).replace(',', ' •');
+  } catch (e) {
+    return dateString;
+  }
+};
+
+// Helper function to generate a better session title
+const generateSessionTitle = (session: Session) => {
+  // If title is already custom (not default format), return it
+  if (!session.title.startsWith("Session ")) {
+    return session.title;
+  }
+  
+  return `Chat ${formatDate(session.time_created)}`;
+};
 
 export default function Sidebar({
   user,
@@ -88,12 +117,20 @@ export default function Sidebar({
             sessionsList?.map((session, index) => (
               <div
                 key={`${session.id}-${index}`}
-                className="p-3 rounded-lg bg-zinc-800 hover:bg-zinc-700 cursor-pointer"
+                className={`p-3 rounded-lg ${currentSession?.id === session.id 
+                  ? 'bg-blue-900/30 border border-blue-700/50' 
+                  : 'bg-zinc-800 hover:bg-zinc-700'} 
+                  cursor-pointer transition-colors duration-200`}
                 onClick={() => handleSession(session.id)}
               >
-                <div className="text-sm font-medium">{session.title}</div>
-                <div className="text-xs text-zinc-400">
-                  {session.time_created}
+                <div className="flex items-center gap-2">
+                  <MessageSquare className="h-4 w-4 text-zinc-400" />
+                  <div className="text-sm font-medium truncate">
+                    {generateSessionTitle(session)}
+                  </div>
+                </div>
+                <div className="text-xs text-zinc-400 mt-1 truncate">
+                  {formatDate(session.time_created)}
                 </div>
               </div>
             ))}

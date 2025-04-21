@@ -16,7 +16,7 @@ class Chunky():
         
     def basic_response(self, prompt):
         response = self.client.chat.completions.create(
-            model="meta-llama/Llama-3.3-70B-Instruct",
+            model="Qwen/Qwen2.5-Coder-32B-Instruct",
             messages=[
                 {
                     "role": "user",

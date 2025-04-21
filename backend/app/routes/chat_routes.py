@@ -150,17 +150,21 @@ def handle_chat():
         try:
             print("Attempting to generate and render Manim video...")
             
-            # Add AI response as comments at the top of the Manim script for fallback video
-            ai_message_comment = f"# {ai_message.replace('\n', '\n# ')}"
+            # Sanitize AI message to remove problematic characters
+            ai_message_sanitized = ai_message.replace('\u25cf', '*')  # Replace bullet points with asterisks
+            ai_message_sanitized = ''.join(c for c in ai_message_sanitized if ord(c) < 128 or c.isspace())  # Keep ASCII chars only
+            ai_message_comment = f"# {ai_message_sanitized.replace('\n', '\n# ')}"
+            
             manim_code = ai_message_comment + "\n\n" + manim_code
             
             combiner = CombinedCodeGenerator(code_chunks)
             combined_file = combiner.save_to_file(folder="generated_manim", filename='manim.py')
             
             # Add AI response as comments to the generated file
-            with open(combined_file, 'r') as f:
+            with open(combined_file, 'r', encoding='utf-8') as f:
                 file_content = f.read()
-            with open(combined_file, 'w') as f:
+            
+            with open(combined_file, 'w', encoding='utf-8') as f:
                 f.write(f"{ai_message_comment}\n\n{file_content}")
             
             print(f"Combined Manim script saved to: {combined_file}")
