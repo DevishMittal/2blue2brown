@@ -40,10 +40,17 @@ def main():
     user_prompt = input("Enter a concept you'd like explained: ")
     
     # Initial pipeline state.
-    state = {
+    state = { 
         "user_input": user_prompt,
-        "session_id": None  # No DB context for this demo.
+        "session_id": None,
+        "content_structure": {
+            "introduction": True,
+            "core_concepts": True,
+            "visual_examples": True,
+            "real_world_applications": True,
+            "summary": True
     }
+}
     
     # Execute the pipeline.
     final_state = execute_pipeline(state)

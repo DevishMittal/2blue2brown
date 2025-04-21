@@ -264,7 +264,7 @@ class VideoMaker:
             image.save(output_path)
             return False
             
-    def _create_video_from_images(self, image_files, output_path, slide_duration=3.0):
+    def _create_video_from_images(self, image_files, output_path, slide_duration=5.0):
         """Create video from images using ffmpeg"""
         try:
             # Ensure output directory exists
