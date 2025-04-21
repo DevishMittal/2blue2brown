@@ -6,10 +6,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Send, User, Bot, X } from "lucide-react";
 import Image from "next/image";
-import ReactMarkdown from "react-markdown";
 import { Session, Message } from "@/lib/types";
 
-const sendMessageToBackend = async (message: Message): Promise<void> => {
+const sendMessageToBackend = async (message: Message): Promise<{message: string, video_url: string | null}> => {
   console.log("Sending message to backend...");
   const formData = new FormData();
   formData.append("session_id", message.session_id || "NULL");
@@ -35,14 +34,20 @@ const sendMessageToBackend = async (message: Message): Promise<void> => {
     const result = await response.json();
     console.log("Upload response in sendMessageToBackend:", result);
 
-    return result;
+    return {
+      message: result.message || "",
+      video_url: result.video_url || null
+    };
   } catch (error) {
     console.error("Upload failed in sendMessageToBackend:", error);
+    return {
+      message: "Sorry, there was an error processing your request.",
+      video_url: null
+    };
   }
 };
 
 export default function ChatWindow({
-  user,
   currentSession,
   setCurrentSession,
   messageHistory,
@@ -50,7 +55,7 @@ export default function ChatWindow({
   newSession,
   setNewSession,
 }: {
-  user: string;
+  user?: string;
   currentSession: Session | null;
   setCurrentSession: React.Dispatch<React.SetStateAction<Session | null>>;
   messageHistory: Message[];
@@ -62,7 +67,6 @@ export default function ChatWindow({
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [dragActive, setDragActive] = useState(false);
-  const [videoUrl, setVideoUrl] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
@@ -80,11 +84,6 @@ export default function ChatWindow({
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messageHistory]);
-
-  // useEffect(() => {
-  //   console.log("currentSession", currentSession);
-  //   console.log("chatHistory", messageHistory);
-  // });
 
   useEffect(() => {
     if (newSession) {
@@ -162,20 +161,13 @@ export default function ChatWindow({
         message: aiMessage,
         file: null,
         imageUrl: null,
+        videoUrl: null,
         time_created: new Date().toISOString(),
       },
     ];
 
     if (videoUrl) {
-      newMessages.push({
-        id: null,
-        session_id: currentSession?.id || null,
-        sender: "ai",
-        message: `<video controls class="rounded w-full max-w-md mt-2"><source src="${videoUrl}" type="video/mp4">Your browser does not support the video tag.</video>`,
-        file: null,
-        imageUrl: null,
-        time_created: new Date().toISOString(),
-      });
+      newMessages[0].videoUrl = videoUrl;
     }
 
     setMessageHistory((prev) => [...prev, ...newMessages]);
@@ -210,7 +202,7 @@ export default function ChatWindow({
                 >
                   <div
                     className="prose prose-invert max-w-none"
-                    dangerouslySetInnerHTML={{ __html: msg.message }}
+                    dangerouslySetInnerHTML={{ __html: msg.message || '' }}
                   />
 
                   {msg.imageUrl && (
@@ -222,6 +214,23 @@ export default function ChatWindow({
                         height={200}
                         className="rounded-md"
                       />
+                    </div>
+                  )}
+                  
+                  {/* Handle video display from various sources */}
+                  {msg.videoUrl && (
+                    <div className="mt-3">
+                      <video controls className="rounded-md w-full max-w-md">
+                        <source 
+                          src={
+                            msg.videoUrl.startsWith('/api') 
+                              ? `${process.env.NEXT_PUBLIC_BACKEND_URL}${msg.videoUrl}`
+                              : msg.videoUrl
+                          } 
+                          type="video/mp4" 
+                        />
+                        Your browser does not support the video tag.
+                      </video>
                     </div>
                   )}
 
@@ -311,6 +320,7 @@ export default function ChatWindow({
             accept="image/*,application/pdf"
             onChange={handleFileSelect}
             className="hidden"
+            aria-label="Upload file"
           />
           <Button
             className="h-[62px] cursor-pointer px-4"

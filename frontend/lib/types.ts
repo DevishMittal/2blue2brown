@@ -11,6 +11,7 @@ export interface Message {
     sender: "user" | "ai";
     message: string | null;
     imageUrl?: string | null;
+    videoUrl?: string | null;
     file?: File | null;
     time_created: string | null;
     imageSummary?: string | null;

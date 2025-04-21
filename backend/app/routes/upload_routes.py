@@ -1,4 +1,5 @@
-from flask import jsonify, request, Blueprint
+from flask import jsonify, request, Blueprint, send_from_directory
+import os
 
 upload_bp = Blueprint("upload", __name__)
 
@@ -20,3 +21,19 @@ def route_upload_image():
     print(f"Size: {len(file_bytes)} bytes")
 
     return jsonify({"message": "File uploaded successfully", "filename": image_file.filename}), 200
+
+@upload_bp.route("/upload_file", methods=["POST"])
+def upload_file():
+    if "file" not in request.files:
+        return jsonify({"error": "No file part"}), 400
+    file = request.files["file"]
+    if file.filename == "":
+        return jsonify({"error": "No selected file"}), 400
+    # Process the file upload
+    return jsonify({"message": "File uploaded successfully"}), 200
+
+@upload_bp.route("/media/<filename>", methods=["GET"])
+def serve_media(filename):
+    """Serve media files from local storage"""
+    local_storage_path = os.path.join(os.getcwd(), "local_storage")
+    return send_from_directory(local_storage_path, filename)

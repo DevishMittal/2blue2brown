@@ -8,3 +8,4 @@ __pycache__/
 .venv/
 */media/
 /backend/app/api/media/
+/local_storage/

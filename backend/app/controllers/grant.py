@@ -15,7 +15,7 @@ class Grant():
         
     def code_response(self, prompt):
         response = self.client.chat.completions.create(
-            model="meta-llama/Meta-Llama-3.1-70B-Instruct",
+            model="meta-llama/Llama-3.3-70B-Instruct",
             messages=[
                 {
                     "role": "user",
