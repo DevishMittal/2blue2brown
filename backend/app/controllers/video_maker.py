@@ -8,13 +8,15 @@ import tempfile
 import re
 from PIL import Image, ImageDraw, ImageFont
 import textwrap
+from app.controllers.voiceover_maker import VoiceOverMaker
 
 class VideoMaker:
-    def __init__(self, script_file, scene_name="MainScene", quality="l", preview=True):
+    def __init__(self, script_file, scene_name="MainScene", quality="l", preview=True, session_id=None):
         self.script_file = script_file
         self.scene_name = scene_name
         self.quality = quality
         self.preview = preview
+        self.session_id = session_id
         # Store AI response for fallback mechanism
         self.ai_response = self._extract_ai_response()
 
@@ -42,24 +44,66 @@ class VideoMaker:
             print(f"Error extracting AI response: {e}")
             return "Advanced mathematical concepts visualization."
 
-    def render_video(self):
+    def render_video(self, add_voiceover=True):
         # First try the standard Manim approach
         video_path = self._try_manim_render()
         if video_path and os.path.exists(video_path):
+            if add_voiceover:
+                video_path = self._add_voiceover_to_video(video_path)
             return video_path
             
         # If Manim fails, fall back to automatic video generation
         print("Manim rendering failed. Generating automatic video instead.")
-        return self._generate_auto_video()
+        video_path = self._generate_auto_video()
+        if add_voiceover and video_path:
+            video_path = self._add_voiceover_to_video(video_path)
+        return video_path
+    
+    def _add_voiceover_to_video(self, video_path):
+        """Add voiceover to the video using VoiceOverMaker"""
+        try:
+            # Create voiceover maker instance
+            voiceover_maker = VoiceOverMaker()
+            
+            # Extract text from script
+            voiceover_maker.set_text_from_script(self.script_file)
+            
+            # If no text extracted from script, use AI response
+            if not voiceover_maker.text or len(voiceover_maker.text) < 10:
+                voiceover_maker.set_text(self.ai_response)
+            
+            # Generate voiceover audio
+            voiceover_maker.generate_voiceover()
+            
+            # Combine with video
+            if voiceover_maker.output_path and os.path.exists(voiceover_maker.output_path):
+                # Generate output filename with session_id for uniqueness
+                if self.session_id:
+                    output_dir = os.path.dirname(video_path)
+                    timestamp = int(datetime.now().timestamp())
+                    basename = f"video_{self.session_id}_{timestamp}_with_audio.mp4"
+                    output_path = os.path.join(output_dir, basename)
+                else:
+                    output_path = None
+                    
+                return voiceover_maker.combine_with_video(video_path, output_path)
+                
+            return video_path
+            
+        except Exception as e:
+            print(f"Error adding voiceover: {e}")
+            return video_path
         
     def _try_manim_render(self):
         """Try to render with Manim first"""
         try:
             # Check if manim is installed
             process = subprocess.run(["manim", "--version"], 
-                                    check=False, 
-                                    capture_output=True, 
-                                    text=True)
+                                   check=False, 
+                                   capture_output=True, 
+                                   text=True,
+                                   encoding='utf-8',
+                                   errors='replace')
             
             if process.returncode != 0:
                 print("Manim check failed. Using automatic video generation.")
@@ -88,10 +132,12 @@ class VideoMaker:
             
             # Execute the command
             process = subprocess.run(command, 
-                                    check=False, 
-                                    capture_output=True, 
-                                    text=True,
-                                    timeout=120)  # 2-minute timeout
+                                   check=False, 
+                                   capture_output=True, 
+                                   text=True,
+                                   encoding='utf-8',
+                                   errors='replace',
+                                   timeout=120)  # 2-minute timeout
             
             if process.returncode != 0:
                 print(f"Manim error: {process.stderr}")
@@ -143,7 +189,15 @@ class VideoMaker:
                 image_files.append(image_path)
                 
             # Create video with ffmpeg
-            output_video = os.path.join(os.getcwd(), 'media', 'videos', 'auto_generated.mp4')
+            # Use session_id for unique filename
+            timestamp = int(datetime.now().timestamp())
+            
+            if self.session_id:
+                basename = f"video_{self.session_id}_{timestamp}.mp4"
+            else:
+                basename = f"video_{timestamp}.mp4"
+                
+            output_video = os.path.join(os.getcwd(), 'media', 'videos', basename)
             os.makedirs(os.path.dirname(output_video), exist_ok=True)
             
             # Calculate duration based on text length
@@ -183,6 +237,61 @@ class VideoMaker:
         
         return slides
         
+    def _create_simple_fallback_video(self):
+        """Create a very simple fallback video as last resort"""
+        fallback_dir = os.path.join(os.getcwd(), "media", "fallback")
+        os.makedirs(fallback_dir, exist_ok=True)
+        
+        # Generate unique filename
+        timestamp = int(datetime.now().timestamp())
+        if self.session_id:
+            basename = f"fallback_{self.session_id}_{timestamp}.mp4"
+        else:
+            basename = f"fallback_{timestamp}.mp4"
+            
+        fallback_path = os.path.join(fallback_dir, basename)
+        
+        try:
+            # Basic text content
+            text = "Mathematical Visualization\n\nThis video shows concepts in mathematics and their applications."
+            
+            # Write text to file
+            text_path = os.path.join(fallback_dir, f"text_{timestamp}.txt")
+            with open(text_path, "w") as f:
+                f.write(text)
+                
+            # Try ffmpeg command for simplest possible video
+            ffmpeg_cmd = [
+                "ffmpeg", "-y",
+                "-f", "lavfi", 
+                "-i", "color=c=blue:s=1280x720:d=10",
+                "-vf", f"drawtext=fontfile=/Windows/Fonts/arial.ttf:textfile={text_path}:fontcolor=white:fontsize=30:x=(w-text_w)/2:y=(h-text_h)/2",
+                fallback_path
+            ]
+            
+            subprocess.run(ffmpeg_cmd, check=False, capture_output=True)
+            
+            if os.path.exists(fallback_path):
+                return fallback_path
+                
+            # If that fails, try even simpler version
+            ffmpeg_cmd = [
+                "ffmpeg", "-y",
+                "-f", "lavfi", 
+                "-i", "color=c=blue:s=640x480:d=5",
+                fallback_path
+            ]
+            
+            subprocess.run(ffmpeg_cmd, check=False, capture_output=True)
+            
+            if os.path.exists(fallback_path):
+                return fallback_path
+                
+        except Exception as e:
+            print(f"Error creating fallback video: {e}")
+            
+        return None
+
     def _create_slide_image(self, text, output_path, is_title=False):
         """Create a single slide as an image with improved layout"""
         width, height = 1920, 1080  # Increased resolution
@@ -281,17 +390,17 @@ class VideoMaker:
             
             # Run ffmpeg to create video
             cmd = [
-            "ffmpeg", "-y",
-            "-f", "concat",
-            "-safe", "0",
-            "-i", list_file,
-            "-vsync", "vfr",
-            "-pix_fmt", "yuv420p",
-            "-c:v", "libx264",
-            "-crf", "18",  # Higher quality (lower is better, 18-23 is good)
-            "-preset", "slow",  # Better compression
-            output_path
-        ]
+                "ffmpeg", "-y",
+                "-f", "concat",
+                "-safe", "0",
+                "-i", list_file,
+                "-vsync", "vfr",
+                "-pix_fmt", "yuv420p",
+                "-c:v", "libx264",
+                "-crf", "18",  # Higher quality (lower is better, 18-23 is good)
+                "-preset", "slow",  # Better compression
+                output_path
+            ]
             
             process = subprocess.run(cmd, 
                                     check=False, 
@@ -307,51 +416,3 @@ class VideoMaker:
         except Exception as e:
             print(f"Error creating video from images: {e}")
             return self._create_simple_fallback_video()
-            
-    def _create_simple_fallback_video(self):
-        """Create a very simple fallback video as last resort"""
-        fallback_dir = os.path.join(os.getcwd(), "backend", "media", "fallback")
-        os.makedirs(fallback_dir, exist_ok=True)
-        
-        fallback_path = os.path.join(fallback_dir, "simple_fallback.mp4")
-        
-        try:
-            # Basic text content
-            text = "Mathematical Visualization\n\nThis video shows concepts in mathematics and their applications."
-            
-            # Write text to file
-            text_path = os.path.join(fallback_dir, "text.txt")
-            with open(text_path, "w") as f:
-                f.write(text)
-                
-            # Try ffmpeg command for simplest possible video
-            ffmpeg_cmd = [
-                "ffmpeg", "-y",
-                "-f", "lavfi", 
-                "-i", "color=c=blue:s=1280x720:d=10",
-                "-vf", f"drawtext=fontfile=/Windows/Fonts/arial.ttf:textfile={text_path}:fontcolor=white:fontsize=30:x=(w-text_w)/2:y=(h-text_h)/2",
-                fallback_path
-            ]
-            
-            subprocess.run(ffmpeg_cmd, check=False, capture_output=True)
-            
-            if os.path.exists(fallback_path):
-                return fallback_path
-                
-            # If that fails, try even simpler version
-            ffmpeg_cmd = [
-                "ffmpeg", "-y",
-                "-f", "lavfi", 
-                "-i", "color=c=blue:s=640x480:d=5",
-                fallback_path
-            ]
-            
-            subprocess.run(ffmpeg_cmd, check=False, capture_output=True)
-            
-            if os.path.exists(fallback_path):
-                return fallback_path
-                
-        except Exception as e:
-            print(f"Error creating fallback video: {e}")
-            
-        return None

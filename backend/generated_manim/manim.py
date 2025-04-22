@@ -1,29 +1,158 @@
-# Certainly! Refraction of light is a fundamental concept in optics. It occurs when light passes from one medium to another with a different optical density, causing it to change direction. This phenomenon is due to the change in speed of light as it moves between these media. For example, when light travels from air into water, it slows down and bends towards the normal (an imaginary line perpendicular to the surface at the point of incidence).
+# Certainly! Sound waves travel through a medium, such as air, water, or solids, by creating a series of compressions and rarefactions. Heres a step-by-step explanation:
 # 
-# Key points about refraction include:
-# 1. **Snell's Law**: This law quantifies the relationship between the angles of incidence and refraction and the refractive indices of the two media involved. It is expressed as \( n_1 \sin(\theta_1) = n_2 \sin(\theta_2) \), where \( n_1 \) and \( n_2 \) are the refractive indices of the first and second media, respectively, and \( \theta_1 \) and \( \theta_2 \) are the angles of incidence and refraction.
+# 1. **Source of Sound**: Sound begins with a source that vibrates, like a speaker cone, vocal cords, or a musical instrument. This vibration causes the particles in the surrounding medium (air, for example) to move.
 # 
-# 2. **Refractive Index**: This is a measure of how much light is slowed down in a medium compared to its speed in a vacuum. Water has a higher refractive index than air, which is why light bends when it enters water.
+# 2. **Compression and Rarefaction**: As the source vibrates, it pushes the particles together, creating an area of high pressure called a compression. After the particles are pushed together, they spread out, creating an area of low pressure called a rarefaction. These compressions and rarefactions form a wave pattern.
 # 
-# 3. **Applications**: Refraction is crucial in many applications, including the design of lenses in cameras and eyeglasses, fiber optics for telecommunications, and even in natural phenomena like rainbows.
+# 3. **Wave Propagation**: The compressions and rarefactions propagate outward from the source. Each particle in the medium moves back and forth, transferring the energy of the wave to the next particle. This process continues, allowing the sound wave to travel through the medium.
 # 
-# Do you have any specific questions or need further clarification on any aspect of refraction?
+# 4. **Speed of Sound**: The speed at which sound travels depends on the properties of the medium. In general, sound travels faster in liquids and solids than in gases. For example, sound travels about 343 meters per second in air at room temperature, but much faster in water (about 1,500 meters per second).
+# 
+# 5. **Amplitude and Frequency**: The amplitude of a sound wave refers to the maximum displacement of the particles from their rest position, which determines the loudness of the sound. The frequency is the number of compressions and rarefactions that pass a given point per second, measured in Hertz (Hz), and determines the pitch of the sound.
+# 
+# 6. **Reflection, Refraction, and Diffraction**: Sound waves can also be reflected when they hit a surface, refracted when they pass through different mediums, and diffracted when they encounter obstacles or openings, causing them to bend and spread out.
+# 
+# Understanding these basic principles helps explain how sound waves move and interact with their environment. If you have any specific questions or need further clarification on any part of this process, feel free to ask!
 
 from manim import *
 import numpy as np
 
 class LSTMScene(Scene):
     def construct(self):
-        title = Text("Light Refraction", font_size=30).move_to(np.array([0, 1, 0]))
+        # Main Title
+        title = Text("Sound Waves Travel Through Mediums", font_size=36).move_to(np.array([0, 0, 0]))
         self.play(Write(title))
         self.wait(3)
-        light_ray = Arrow(start=np.array([-2, 0, 0]), end=np.array([2, 0, 0]), buff=0)
-        self.play(Create(light_ray))
+        # Subtitle
+        subtitle = Text("Introduction to Sound Wave Travel", font_size=24).next_to(title, DOWN, buff=0.5)
+        self.play(Write(subtitle))
+        self.wait(5)
+        # Medium Representation
+        medium = Rectangle(width=8, height=0.5, color=GRAY, fill_opacity=0.7).move_to(np.array([0, -2, 0]))
+        self.play(Create(medium))
         self.wait(3)
-        incident_ray_label = Text("Incident Ray", font_size=24).move_to(np.array([0, 0.5, 0]))
-        self.play(Write(incident_ray_label))
+        # Sound Wave Representation
+        wave = ParametricFunction(
+            lambda t: np.array([
+                t,
+                np.sin(t * 2 * PI),
+                0
+            ]),
+            t_range=[-4, 4],
+            color=BLUE
+        ).move_to(np.array([0, -1.5, 0]))
+        self.play(Create(wave))
+        self.wait(5)
+        # Arrows indicating wave travel
+        arrow1 = Arrow(start=np.array([-3, -1.5, 0]), end=np.array([-2, -1.5, 0]), color=WHITE)
+        arrow2 = Arrow(start=np.array([2, -1.5, 0]), end=np.array([3, -1.5, 0]), color=WHITE)
+        self.play(Create(arrow1), Create(arrow2))
         self.wait(3)
-        subtitle = Text("Defining Light Refraction", font_size=24).move_to(np.array([0, -1, 0]))
+        # Labels for arrows
+        label1 = Text("Wave Travel", font_size=24).next_to(arrow1, UP, buff=0.5)
+        label2 = Text("Wave Travel", font_size=24).next_to(arrow2, UP, buff=0.5)
+        self.play(Write(label1), Write(label2))
+        self.wait(5)
+        # Clearing the scene
+        self.play(FadeOut(title), FadeOut(subtitle), FadeOut(medium), FadeOut(wave), FadeOut(arrow1), FadeOut(arrow2), FadeOut(label1), FadeOut(label2))
+        self.wait(5)
+
+class LSTMScene(Scene):
+    def construct(self):
+        # Draw a horizontal Line from (-4, 0, 0) to (4, 0, 0) representing air
+        air_line = Line(start=np.array([-4, 0, 0]), end=np.array([4, 0, 0]), color=WHITE)
+        self.play(Create(air_line))
+        self.wait(3)
+        # Add a Text object at position (-3.5, 0.5, 0) saying 'Air' with a font size of 24
+        air_text = Text("Air", font_size=24).move_to(np.array([-3.5, 0.5, 0]))
+        self.play(Write(air_text))
+        self.wait(3)
+        # Draw a small circle of radius 0.1 at position (-3, 0, 0) to represent a sound source
+        sound_source_circle = Circle(radius=0.1, color=BLUE).move_to(np.array([-3, 0, 0]))
+        self.play(Create(sound_source_circle))
+        self.wait(3)
+        # Add a Text object at position (-3, -0.5, 0) saying 'Source' with a font size of 24
+        source_text = Text("Source", font_size=24).move_to(np.array([-3, -0.5, 0]))
+        self.play(Write(source_text))
+        self.wait(3)
+        # Add subtitle
+        subtitle = Text("Sound Source in Air", font_size=30).to_edge(DOWN)
+        self.play(Write(subtitle))
+        self.wait(5)
+
+class LSTMScene(Scene):
+    def construct(self):
+        # Draw a horizontal Line from (-4, 0, 0) to (4, 0, 0) representing water
+        water_line = Line(start=np.array([-4, 0, 0]), end=np.array([4, 0, 0]), color=BLUE)
+        self.play(Create(water_line))
+        self.wait(3)
+        # Add a Text object at position (-3.5, 0.5, 0) saying 'Water' with a font size of 24
+        water_text = Text("Water", font_size=24).move_to(np.array([-3.5, 0.5, 0]))
+        self.play(Write(water_text))
+        self.wait(3)
+        # Draw a small circle of radius 0.1 at position (-3, 0, 0) to represent a sound source
+        sound_source = Circle(radius=0.1, color=WHITE).move_to(np.array([-3, 0, 0]))
+        self.play(Create(sound_source))
+        self.wait(3)
+        # Add a Text object at position (-3, -0.5, 0) saying 'Source' with a font size of 24
+        source_text = Text("Source", font_size=24).move_to(np.array([-3, -0.5, 0]))
+        self.play(Write(source_text))
+        self.wait(3)
+        # Add subtitle
+        subtitle = Text("Sound Source in Water", font_size=30).to_edge(UP)
+        self.play(Write(subtitle))
+        self.wait(5)
+
+class LSTMScene(Scene):
+    def construct(self):
+        # Draw a horizontal Line from (-4, 0, 0) to (4, 0, 0)
+        medium_line = Line(start=np.array([-4, 0, 0]), end=np.array([4, 0, 0]), color=GRAY)
+        self.play(Create(medium_line))
+        self.wait(3)
+        # Draw a small circle of radius 0.1 at position (-3, 0, 0) to represent a sound source
+        sound_source = Circle(radius=0.1, color=WHITE, fill_opacity=1).move_to(np.array([-3, 0, 0]))
+        self.play(Create(sound_source))
+        self.wait(3)
+        # Add a Text object at position (-3, -0.5, 0) saying 'Source'
+        source_label = Text('Source', font_size=24).move_to(np.array([-3, -0.5, 0]))
+        self.play(Write(source_label))
+        self.wait(3)
+        # Draw a series of concentric circles centered at (-3, 0, 0) with radii increasing from 0.5 to 3
+        wavefronts = []
+        for radius in np.arange(0.5, 3.5, 0.5):
+            wavefront = Circle(radius=radius, color=LIGHT_BLUE, fill_opacity=0.2).move_to(np.array([-3, 0, 0]))
+            wavefronts.append(wavefront)
+        for wavefront in wavefronts:
+            self.play(Create(wavefront))
+            self.wait(1)
+        # Add subtitle "Wavefront Expansion"
+        subtitle = Text('Wavefront Expansion', font_size=30).to_edge(DOWN)
+        self.play(Write(subtitle))
+        self.wait(5)
+
+class LSTMScene(Scene):
+    def construct(self):
+        # Medium Line
+        medium_line = Line(start=np.array([-4, 0, 0]), end=np.array([4, 0, 0]))
+        # Sound Source Circle
+        sound_source = Circle(radius=0.1, color=WHITE, fill_opacity=1).move_to(np.array([-3, 0, 0]))
+        # Source Label
+        source_label = Text('Source', font_size=24).move_to(np.array([-3, -0.5, 0]))
+        # Arrows
+        arrow_positions = np.linspace(-2, 3, 6)
+        arrows = [Arrow(start=np.array([-3, 0, 0]), end=np.array([pos, 0, 0]), color=RED) for pos in arrow_positions]
+        # Subtitle
+        subtitle = Text('Direction of Sound Waves', font_size=30).to_edge(DOWN)
+        # Animation
+        self.play(Create(medium_line))
+        self.wait(3)
+        self.play(Create(sound_source))
+        self.wait(3)
+        self.play(Write(source_label))
+        self.wait(3)
+        for arrow in arrows:
+            self.play(Create(arrow))
+            self.wait(1)
         self.play(Write(subtitle))
         self.wait(5)
 
@@ -31,25 +160,32 @@ class LSTMScene(Scene):
     def construct(self):
         # Set reproducibility
         np.random.seed(42)
-        # Draw the boundary line
-        boundary_line = Line(start=np.array([-3, 0, 0]), end=np.array([3, 0, 0]), color=WHITE)
-        self.play(Create(boundary_line))
+        # Draw a horizontal Line from (-4, 0, 0) to (4, 0, 0)
+        medium_line = Line(start=np.array([-4, 0, 0]), end=np.array([4, 0, 0]), color=GRAY)
+        self.play(Create(medium_line))
         self.wait(3)
-        # Draw the incident ray
-        incident_ray = Arrow(start=np.array([-2, 0.5, 0]), end=np.array([2, 0.5, 0]), color=YELLOW)
-        self.play(Create(incident_ray))
+        # Draw a small circle of radius 0.1 at position (-3, 0, 0)
+        sound_source = Circle(radius=0.1, color=BLUE).move_to(np.array([-3, 0, 0]))
+        self.play(Create(sound_source))
         self.wait(3)
-        # Draw the refracted ray
-        refracted_ray = Arrow(start=np.array([-2, -0.5, 0]), end=np.array([2, -1, 0]), color=BLUE)
-        self.play(Create(refracted_ray))
+        # Add a Text object at position (-3, -0.5, 0) saying 'Source'
+        source_text = Text("Source", font_size=24).move_to(np.array([-3, -0.5, 0]))
+        self.play(Write(source_text))
         self.wait(3)
-        # Add text labels
-        incident_text = Text("Incident Ray", font_size=24).next_to(incident_ray, UP)
-        refracted_text = Text("Refracted Ray", font_size=24).next_to(refracted_ray, DOWN)
-        self.play(Write(incident_text), Write(refracted_text))
+        # Draw a rectangle of width 1 and height 0.2 at position (2, 0, 0)
+        sound_detector = Rectangle(width=1, height=0.2, color=GREEN).move_to(np.array([2, 0, 0]))
+        self.play(Create(sound_detector))
         self.wait(3)
-        # Add subtitle
-        subtitle = Text("Visualizing Incident and Refracted Rays", font_size=30).shift(DOWN*2)
+        # Add a Text object at position (2, -0.5, 0) saying 'Detector'
+        detector_text = Text("Detector", font_size=24).move_to(np.array([2, -0.5, 0]))
+        self.play(Write(detector_text))
+        self.wait(3)
+        # Draw an arrow from (-3, 0, 0) to (2, 0, 0)
+        sound_wave_arrow = Arrow(start=np.array([-3, 0, 0]), end=np.array([2, 0, 0]), color=YELLOW)
+        self.play(Create(sound_wave_arrow))
+        self.wait(3)
+        # Add subtitle "Sound Wave Detection"
+        subtitle = Text("Sound Wave Detection", font_size=30).to_edge(DOWN)
         self.play(Write(subtitle))
         self.wait(5)
 
@@ -57,359 +193,120 @@ class LSTMScene(Scene):
     def construct(self):
         # Set reproducibility
         np.random.seed(42)
-        # Draw the boundary line
-        boundary_line = Line(start=np.array([-3, 0, 0]), end=np.array([3, 0, 0]), color=WHITE)
-        self.play(Create(boundary_line))
+        # Draw a horizontal Line from (-4, 0, 0) to (4, 0, 0)
+        medium_line = Line(start=np.array([-4, 0, 0]), end=np.array([4, 0, 0]), color=WHITE)
+        self.play(Create(medium_line))
         self.wait(3)
-        # Draw the incident ray arrow
-        incident_ray = Arrow(start=np.array([-2, 0.5, 0]), end=np.array([2, 0.5, 0]), color=YELLOW, buff=0)
-        incident_ray.shift(UP * 0.1)
-        self.play(Create(incident_ray))
+        # Draw a small circle of radius 0.1 at position (-3, 0, 0)
+        sound_source = Circle(radius=0.1, color=BLUE).move_to(np.array([-3, 0, 0]))
+        self.play(Create(sound_source))
         self.wait(3)
-        # Add text for incident ray
-        incident_text = Text("Incident Ray", font_size=24).next_to(incident_ray, UP, buff=0.2)
-        self.play(Write(incident_text))
+        # Add a Text object at position (-3, -0.5, 0) saying 'Source'
+        source_text = Text("Source", font_size=24).move_to(np.array([-3, -0.5, 0]))
+        self.play(Write(source_text))
         self.wait(3)
-        # Draw the refracted ray arrow
-        refracted_ray = Arrow(start=np.array([-2, -0.5, 0]), end=np.array([2, -1.5, 0]), color=BLUE, buff=0)
-        self.play(Create(refracted_ray))
+        # Draw a rectangle of width 1 and height 0.2 at position (2, 0, 0)
+        sound_detector = Rectangle(width=1, height=0.2, color=YELLOW).move_to(np.array([2, 0, 0]))
+        self.play(Create(sound_detector))
         self.wait(3)
-        # Add text for refracted ray
-        refracted_text = Text("Refracted Ray", font_size=24).next_to(refracted_ray, DOWN, buff=0.2)
-        self.play(Write(refracted_text))
+        # Add a Text object at position (2, -0.5, 0) saying 'Detector'
+        detector_text = Text("Detector", font_size=24).move_to(np.array([2, -0.5, 0]))
+        self.play(Write(detector_text))
         self.wait(3)
+        # Draw a series of arrows from (-3, 0, 0) to (2, 0, 0) with varying lengths and angles
+        num_arrows = 10
+        angles = np.linspace(0, np.pi/4, num_arrows)
+        lengths = np.linspace(1, 5, num_arrows)
+        arrows = []
+        for angle, length in zip(angles, lengths):
+            arrow_end = np.array([
+                -3 + length * np.cos(angle),
+                length * np.sin(angle),
+                0
+            ])
+            arrow = Arrow(start=np.array([-3, 0, 0]), end=arrow_end, color=GREEN)
+            arrows.append(arrow)
+        for arrow in arrows:
+            self.play(Create(arrow))
+            self.wait(0.5)
         # Add subtitle
-        subtitle = Text("Demonstrating Angle Change", font_size=30).to_edge(DOWN, buff=0.5)
+        subtitle = Text("Reflection of Sound Waves", font_size=30).to_edge(DOWN)
         self.play(Write(subtitle))
         self.wait(5)
 
 class LSTMScene(Scene):
     def construct(self):
-        # Boundary line
-        boundary_line = Line(start=np.array([-3, 0, 0]), end=np.array([3, 0, 0]), color=WHITE)
-        self.play(Create(boundary_line))
+        # Set reproducibility
+        np.random.seed(42)
+        # Draw a horizontal Line from (-4, 0, 0) to (4, 0, 0)
+        medium_line = Line(start=np.array([-4, 0, 0]), end=np.array([4, 0, 0]), color=GRAY)
+        self.play(Create(medium_line))
         self.wait(3)
-        # Boundary label
-        boundary_label = Text("Boundary", font_size=24).move_to(np.array([0, -0.2, 0]))
-        self.play(Write(boundary_label))
+        # Draw a small circle of radius 0.1 at position (-3, 0, 0)
+        sound_source = Circle(radius=0.1, color=WHITE, fill_opacity=1).move_to(np.array([-3, 0, 0]))
+        self.play(Create(sound_source))
         self.wait(3)
-        # Incident Ray arrow
-        incident_ray = Arrow(start=np.array([-2, 0.5, 0]), end=np.array([2, 0.5, 0]), color=YELLOW, buff=0)
-        self.play(Create(incident_ray))
+        # Add a Text object at position (-3, -0.5, 0) saying 'Source'
+        source_text = Text("Source", font_size=24).move_to(np.array([-3, -0.5, 0]))
+        self.play(Create(source_text))
         self.wait(3)
-        # Incident Ray label
-        incident_ray_label = Text("Incident Ray", font_size=24).next_to(incident_ray, UP)
-        self.play(Write(incident_ray_label))
+        # Draw a rectangle of width 1 and height 0.2 at position (2, 0, 0)
+        sound_detector = Rectangle(width=1, height=0.2, color=WHITE, fill_opacity=1).move_to(np.array([2, 0, 0]))
+        self.play(Create(sound_detector))
         self.wait(3)
-        # Refracted Ray arrow
-        refracted_ray = Arrow(start=np.array([-2, -0.5, 0]), end=np.array([2, -0.5, 0]), color=GREEN, buff=0, angle=-PI/6)
-        self.play(Create(refracted_ray))
+        # Add a Text object at position (2, -0.5, 0) saying 'Detector'
+        detector_text = Text("Detector", font_size=24).move_to(np.array([2, -0.5, 0]))
+        self.play(Create(detector_text))
         self.wait(3)
-        # Refracted Ray label
-        refracted_ray_label = Text("Refracted Ray", font_size=24).next_to(refracted_ray, DOWN)
-        self.play(Write(refracted_ray_label))
-        self.wait(3)
-        # Normal line
-        normal_line = Line(start=np.array([-1, 0.5, 0]), end=np.array([-1, -0.5, 0]), color=BLUE)
-        self.play(Create(normal_line))
-        self.wait(3)
-        # Normal label
-        normal_label = Text("Normal", font_size=24).move_to(np.array([-1, -0.1, 0]))
-        self.play(Write(normal_label))
-        self.wait(3)
-        # Subtitle
-        subtitle = Text("Introducing the Normal Line", font_size=30).to_edge(DOWN)
-        self.play(Write(subtitle))
+        # Draw a series of arrows from (-3, 0, 0) to (2, 0, 0) with decreasing amplitude
+        arrow_positions = np.linspace(-3, 2, 10)
+        arrows = []
+        for i, pos in enumerate(arrow_positions):
+            arrow = Arrow(start=np.array([-3, 0, 0]), end=np.array([pos, 0, 0]), color=BLUE, max_stroke_width=10 - i)
+            arrows.append(arrow)
+        for arrow in arrows:
+            self.play(Create(arrow))
+            self.wait(0.5)
+        # Add subtitle
+        subtitle = Text("Attenuation of Sound Waves", font_size=30).to_edge(DOWN)
+        self.play(Create(subtitle))
         self.wait(5)
 
 class LSTMScene(Scene):
     def construct(self):
-        # Boundary Line
-        boundary_line = Line(start=np.array([-3, 0, 0]), end=np.array([3, 0, 0]), color=WHITE)
-        self.play(Create(boundary_line))
+        # Set reproducibility
+        np.random.seed(42)
+        # Draw a horizontal Line from (-4, 0, 0) to (4, 0, 0)
+        medium_line = Line(start=np.array([-4, 0, 0]), end=np.array([4, 0, 0]), color=GRAY)
+        self.play(Create(medium_line))
         self.wait(3)
-        # Boundary Text
-        boundary_text = Text("Boundary", font_size=24).move_to(np.array([0, -0.2, 0]))
-        self.play(Write(boundary_text))
+        # Draw a small circle of radius 0.1 at position (-3, 0, 0)
+        sound_source = Circle(radius=0.1, color=BLUE).move_to(np.array([-3, 0, 0]))
+        self.play(Create(sound_source))
         self.wait(3)
-        # Incident Ray Arrow
-        incident_ray = Arrow(start=np.array([-2, 0.5, 0]), end=np.array([2, 0.5, 0]), buff=0, color=YELLOW)
-        self.play(Create(incident_ray))
+        # Add a Text object at position (-3, -0.5, 0) saying 'Source'
+        source_text = Text("Source", font_size=24).move_to(np.array([-3, -0.5, 0]))
+        self.play(Create(source_text))
         self.wait(3)
-        # Incident Ray Text
-        incident_ray_text = Text("Incident Ray", font_size=24).next_to(incident_ray, UP)
-        self.play(Write(incident_ray_text))
+        # Draw a rectangle of width 1 and height 0.2 at position (2, 0, 0)
+        sound_detector = Rectangle(width=1, height=0.2, color=GREEN).move_to(np.array([2, 0, 0]))
+        self.play(Create(sound_detector))
         self.wait(3)
-        # Refracted Ray Arrow
-        refracted_ray = Arrow(start=np.array([-2, -0.5, 0]), end=np.array([2, -0.5, 0]), buff=0, color=BLUE)
-        refracted_ray.rotate(angle=-PI/6, about_point=np.array([-2, -0.5, 0]))
-        self.play(Create(refracted_ray))
+        # Add a Text object at position (2, -0.5, 0) saying 'Detector'
+        detector_text = Text("Detector", font_size=24).move_to(np.array([2, -0.5, 0]))
+        self.play(Create(detector_text))
         self.wait(3)
-        # Refracted Ray Text
-        refracted_ray_text = Text("Refracted Ray", font_size=24).next_to(refracted_ray, DOWN)
-        self.play(Write(refracted_ray_text))
-        self.wait(3)
-        # Normal Line
-        normal_line = Line(start=np.array([-1, 0.5, 0]), end=np.array([-1, -0.5, 0]), color=GREEN)
-        self.play(Create(normal_line))
-        self.wait(3)
-        # Normal Text
-        normal_text = Text("Normal", font_size=24).move_to(np.array([-1, -0.1, 0]))
-        self.play(Write(normal_text))
-        self.wait(3)
-        # Angle of Incidence Arc
-        angle_of_incidence = Arc(radius=0.5, start_angle=PI/2, angle=-PI/4, color=ORANGE).move_to(np.array([-1, 0, 0]))
-        self.play(Create(angle_of_incidence))
-        self.wait(3)
-        # Angle of Incidence Text
-        angle_of_incidence_text = Text("Angle of Incidence", font_size=24).move_to(np.array([-1.6, 0.3, 0]))
-        self.play(Write(angle_of_incidence_text))
-        self.wait(3)
-        # Angle of Refraction Arc
-        angle_of_refraction = Arc(radius=0.3, start_angle=PI/2, angle=PI/3, color=PURPLE).move_to(np.array([-1, 0, 0]))
-        self.play(Create(angle_of_refraction))
-        self.wait(3)
-        # Angle of Refraction Text
-        angle_of_refraction_text = Text("Angle of Refraction", font_size=24).move_to(np.array([-1.4, -0.3, 0]))
-        self.play(Write(angle_of_refraction_text))
-        self.wait(3)
-        # Subtitle
-        subtitle = Text("Measuring Angles of Incidence and Refraction", font_size=30).to_edge(DOWN)
-        self.play(Write(subtitle))
+        # Draw a series of arrows from (-3, 0, 0) to (2, 0, 0) with varying directions
+        num_arrows = 20
+        angles = np.linspace(0, np.pi, num_arrows)
+        arrows = []
+        for angle in angles:
+            direction = np.array([np.cos(angle), np.sin(angle), 0])
+            arrow = Arrow(start=np.array([-3, 0, 0]), end=np.array([-3, 0, 0]) + direction * 5, color=PURPLE)
+            arrows.append(arrow)
+        self.play(*[Create(arrow) for arrow in arrows])
         self.wait(5)
-
-class LSTMScene(Scene):
-    def construct(self):
-        # Boundary line
-        boundary_line = Line(start=np.array([-3, 0, 0]), end=np.array([3, 0, 0]), color=WHITE)
-        self.play(Create(boundary_line))
-        self.wait(3)
-        # Boundary text
-        boundary_text = Text("Boundary", font_size=30).move_to(np.array([0, -0.2, 0]))
-        self.play(Write(boundary_text))
-        self.wait(3)
-        # Incident ray arrow
-        incident_ray = Arrow(start=np.array([-2, 0.5, 0]), end=np.array([2, 0.5, 0]), color=YELLOW, buff=0)
-        self.play(Create(incident_ray))
-        self.wait(3)
-        # Incident ray text
-        incident_ray_text = Text("Incident Ray", font_size=30).next_to(incident_ray, UP)
-        self.play(Write(incident_ray_text))
-        self.wait(3)
-        # Refracted ray arrow
-        refracted_ray = Arrow(start=np.array([-2, -0.5, 0]), end=np.array([2, -0.5, 0]), color=GREEN, buff=0, angle=-PI/4)
-        self.play(Create(refracted_ray))
-        self.wait(3)
-        # Refracted ray text
-        refracted_ray_text = Text("Refracted Ray", font_size=30).next_to(refracted_ray, DOWN)
-        self.play(Write(refracted_ray_text))
-        self.wait(3)
-        # Normal line
-        normal_line = Line(start=np.array([-1, 0.5, 0]), end=np.array([-1, -0.5, 0]), color=WHITE)
-        self.play(Create(normal_line))
-        self.wait(3)
-        # Normal text
-        normal_text = Text("Normal", font_size=30).move_to(np.array([-1, -0.1, 0]))
-        self.play(Write(normal_text))
-        self.wait(3)
-        # Angle of incidence arc
-        angle_of_incidence_arc = Arc(radius=0.5, start_angle=PI/2, angle=-PI/4, color=BLUE).move_to(np.array([-1, 0, 0]))
-        self.play(Create(angle_of_incidence_arc))
-        self.wait(3)
-        # Angle of incidence text
-        angle_of_incidence_text = Text("Angle of Incidence", font_size=30).move_to(np.array([-1.6, 0.3, 0]))
-        self.play(Write(angle_of_incidence_text))
-        self.wait(3)
-        # Angle of refraction arc
-        angle_of_refraction_arc = Arc(radius=0.3, start_angle=PI/2, angle=PI/6, color=RED).move_to(np.array([-1, 0, 0]))
-        self.play(Create(angle_of_refraction_arc))
-        self.wait(3)
-        # Angle of refraction text
-        angle_of_refraction_text = Text("Angle of Refraction", font_size=30).move_to(np.array([-1.4, -0.3, 0]))
-        self.play(Write(angle_of_refraction_text))
-        self.wait(3)
-        # Refractive indices relationship text
-        refractive_indices_text = Text("n1 > n2", font_size=40).move_to(np.array([0, 1, 0]))
-        self.play(Write(refractive_indices_text))
-        self.wait(3)
-        # Subtitle text
-        subtitle_text = Text("Explaining Refractive Indices", font_size=40).move_to(np.array([0, -1.5, 0]))
-        self.play(Write(subtitle_text))
-        self.wait(5)
-
-class LSTMScene(Scene):
-    def construct(self):
-        # Boundary Line
-        boundary_line = Line(start=np.array([-3, 0, 0]), end=np.array([3, 0, 0]), color=WHITE)
-        self.play(Create(boundary_line))
-        self.wait(3)
-        # Boundary Text
-        boundary_text = Text("Boundary", font_size=30).move_to(np.array([0, -0.2, 0]))
-        self.play(Write(boundary_text))
-        self.wait(3)
-        # Incident Ray Arrow
-        incident_ray = Arrow(start=np.array([-2, 0.5, 0]), end=np.array([2, 0.5, 0]), color=YELLOW, buff=0)
-        self.play(Create(incident_ray))
-        self.wait(3)
-        # Incident Ray Text
-        incident_ray_text = Text("Incident Ray", font_size=30).next_to(incident_ray, UP)
-        self.play(Write(incident_ray_text))
-        self.wait(3)
-        # Refracted Ray Arrow
-        refracted_ray = Arrow(start=np.array([-2, -0.5, 0]), end=np.array([2, -0.5, 0]), color=GREEN, buff=0, angle=-PI/4)
-        self.play(Create(refracted_ray))
-        self.wait(3)
-        # Refracted Ray Text
-        refracted_ray_text = Text("Refracted Ray", font_size=30).next_to(refracted_ray, DOWN)
-        self.play(Write(refracted_ray_text))
-        self.wait(3)
-        # Normal Line
-        normal_line = Line(start=np.array([-1, 0.5, 0]), end=np.array([-1, -0.5, 0]), color=WHITE)
-        self.play(Create(normal_line))
-        self.wait(3)
-        # Normal Text
-        normal_text = Text("Normal", font_size=30).move_to(np.array([-1, -0.1, 0]))
-        self.play(Write(normal_text))
-        self.wait(3)
-        # Angle of Incidence Arc
-        angle_of_incidence_arc = Arc(radius=0.5, start_angle=PI/2, angle=-PI/4, color=BLUE).move_to(np.array([-1, 0, 0]))
-        self.play(Create(angle_of_incidence_arc))
-        self.wait(3)
-        # Angle of Incidence Text
-        angle_of_incidence_text = Text("Angle of Incidence", font_size=30).move_to(np.array([-1.6, 0.3, 0]))
-        self.play(Write(angle_of_incidence_text))
-        self.wait(3)
-        # Angle of Refraction Arc
-        angle_of_refraction_arc = Arc(radius=0.3, start_angle=PI/2, angle=PI/4, color=RED).move_to(np.array([-1, 0, 0]))
-        self.play(Create(angle_of_refraction_arc))
-        self.wait(3)
-        # Angle of Refraction Text
-        angle_of_refraction_text = Text("Angle of Refraction", font_size=30).move_to(np.array([-1.4, -0.3, 0]))
-        self.play(Write(angle_of_refraction_text))
-        self.wait(3)
-        # Snell's Law Text
-        snells_law_text = Text("Snell's Law: n1*sin(theta1) = n2*sin(theta2)", font_size=40).move_to(np.array([0, 1, 0]))
-        self.play(Write(snells_law_text))
-        self.wait(3)
-        # Subtitle Text
-        subtitle_text = Text("Applying Snell's Law", font_size=40).move_to(np.array([0, -1.5, 0]))
-        self.play(Write(subtitle_text))
-        self.wait(5)
-
-class LSTMScene(Scene):
-    def construct(self):
-        # Boundary line
-        boundary_line = Line(start=np.array([-3, 0, 0]), end=np.array([3, 0, 0]), color=WHITE)
-        self.play(Create(boundary_line))
-        self.wait(3)
-        # Boundary label
-        boundary_label = Text("Boundary", font_size=30).move_to(np.array([0, -0.2, 0]))
-        self.play(Write(boundary_label))
-        self.wait(3)
-        # Incident Ray arrow
-        incident_ray = Arrow(start=np.array([-2, 0.5, 0]), end=np.array([2, 0.5, 0]), color=YELLOW, buff=0)
-        self.play(Create(incident_ray))
-        self.wait(3)
-        # Incident Ray label
-        incident_ray_label = Text("Incident Ray", font_size=30).next_to(incident_ray, UP, buff=0.2)
-        self.play(Write(incident_ray_label))
-        self.wait(3)
-        # Refracted Ray arrow
-        refracted_ray = Arrow(start=np.array([-2, -0.5, 0]), end=np.array([2, -0.5, 0]), color=BLUE, buff=0).rotate(-PI/6, about_point=np.array([-2, -0.5, 0]))
-        self.play(Create(refracted_ray))
-        self.wait(3)
-        # Refracted Ray label
-        refracted_ray_label = Text("Refracted Ray", font_size=30).next_to(refracted_ray, DOWN, buff=0.2)
-        self.play(Write(refracted_ray_label))
-        self.wait(3)
-        # Normal line
-        normal_line = Line(start=np.array([-1, 0.5, 0]), end=np.array([-1, -0.5, 0]), color=GREEN)
-        self.play(Create(normal_line))
-        self.wait(3)
-        # Normal label
-        normal_label = Text("Normal", font_size=30).move_to(np.array([-1, -0.1, 0]))
-        self.play(Write(normal_label))
-        self.wait(3)
-        # Angle of incidence arc
-        angle_of_incidence = Arc(radius=0.5, start_angle=-PI/2, angle=PI/4, color=WHITE).move_arc_center_to(np.array([-1, 0, 0]))
-        self.play(Create(angle_of_incidence))
-        self.wait(3)
-        # Angle of incidence label
-        theta1_label = Text("theta1", font_size=30).move_to(np.array([-1.6, 0.3, 0]))
-        self.play(Write(theta1_label))
-        self.wait(3)
-        # Angle of refraction arc
-        angle_of_refraction = Arc(radius=0.3, start_angle=-PI/2, angle=-PI/6, color=WHITE).move_arc_center_to(np.array([-1, 0, 0]))
-        self.play(Create(angle_of_refraction))
-        self.wait(3)
-        # Angle of refraction label
-        theta2_label = Text("theta2", font_size=30).move_to(np.array([-1.4, -0.3, 0]))
-        self.play(Write(theta2_label))
-        self.wait(3)
-        # Snell's Law equation
-        snells_law_equation = Text("n1*sin(theta1) = n2*sin(theta2)", font_size=40).move_to(np.array([0, 1, 0]))
-        self.play(Write(snells_law_equation))
-        self.wait(3)
-        # Subtitle
-        subtitle = Text("Using Snell's Law Symbols", font_size=30).move_to(np.array([0, -1.5, 0]))
-        self.play(Write(subtitle))
-        self.wait(5)
-
-class LSTMScene(Scene):
-    def construct(self):
-        # Boundary line
-        boundary_line = Line(start=np.array([-3, 0, 0]), end=np.array([3, 0, 0]), color=WHITE)
-        self.play(Create(boundary_line))
-        self.wait(3)
-        # Boundary label
-        boundary_label = Text("Boundary", font_size=30).move_to(np.array([0, -0.2, 0]))
-        self.play(Write(boundary_label))
-        self.wait(3)
-        # Incident ray arrow
-        incident_ray = Arrow(start=np.array([-2, 0.5, 0]), end=np.array([2, 0.5, 0]), color=YELLOW, buff=0)
-        self.play(Create(incident_ray))
-        self.wait(3)
-        # Incident ray label
-        incident_ray_label = Text("Incident Ray", font_size=30).next_to(incident_ray, UP)
-        self.play(Write(incident_ray_label))
-        self.wait(3)
-        # Refracted ray arrow
-        refracted_ray = Arrow(start=np.array([-2, -0.5, 0]), end=np.array([2, -0.5, 0]), color=GREEN, buff=0).rotate(-PI/6, about_point=np.array([-2, -0.5, 0]))
-        self.play(Create(refracted_ray))
-        self.wait(3)
-        # Refracted ray label
-        refracted_ray_label = Text("Refracted Ray", font_size=30).next_to(refracted_ray, DOWN)
-        self.play(Write(refracted_ray_label))
-        self.wait(3)
-        # Normal line
-        normal_line = Line(start=np.array([-1, 0.5, 0]), end=np.array([-1, -0.5, 0]), color=WHITE)
-        self.play(Create(normal_line))
-        self.wait(3)
-        # Normal label
-        normal_label = Text("Normal", font_size=30).move_to(np.array([-1, -0.1, 0]))
-        self.play(Write(normal_label))
-        self.wait(3)
-        # Angle of incidence arc
-        angle_of_incidence = Arc(radius=0.5, start_angle=PI/2, angle=-PI/4, color=WHITE).move_arc_center_to(np.array([-1, 0, 0]))
-        self.play(Create(angle_of_incidence))
-        self.wait(3)
-        # Angle of incidence label
-        angle_of_incidence_label = Text("theta1", font_size=30).move_to(np.array([-1.6, 0.3, 0]))
-        self.play(Write(angle_of_incidence_label))
-        self.wait(3)
-        # Angle of refraction arc
-        angle_of_refraction = Arc(radius=0.3, start_angle=PI/2, angle=PI/3, color=WHITE).move_arc_center_to(np.array([-1, 0, 0]))
-        self.play(Create(angle_of_refraction))
-        self.wait(3)
-        # Angle of refraction label
-        angle_of_refraction_label = Text("theta2", font_size=30).move_to(np.array([-1.4, -0.3, 0]))
-        self.play(Write(angle_of_refraction_label))
-        self.wait(3)
-        # Index comparison label
-        index_comparison_label = Text("n1 > n2: theta1 < theta2", font_size=40).move_to(np.array([0, 1, 0]))
-        self.play(Write(index_comparison_label))
-        self.wait(3)
-        # Subtitle
-        subtitle = Text("Comparing Angles with Indices", font_size=35).move_to(np.array([0, -1.5, 0]))
-        self.play(Write(subtitle))
+        # Add subtitle
+        subtitle = Text("Diffraction of Sound Waves", font_size=30).to_edge(DOWN)
+        self.play(Create(subtitle))
         self.wait(5)

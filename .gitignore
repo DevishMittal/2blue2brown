@@ -8,3 +8,8 @@ __pycache__/
 .venv/
 */media/
 /backend/app/api/media/
+backend/backend/local_db/chat_messages.json
+backend/backend/local_db/chat_sessions.json
+backend/local_db/chat_messages.json
+backend/local_db/chat_sessions.json
+backend/generated_manim/manim.py
