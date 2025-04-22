@@ -15,7 +15,7 @@ class Grant():
         
     def code_response(self, prompt):
         response = self.client.chat.completions.create(
-            model="Qwen/QwQ-32B",
+            model="Qwen/Qwen2.5-Coder-32B-Instruct",
             messages=[
                 {
                     "role": "user",

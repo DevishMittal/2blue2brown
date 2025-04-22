@@ -69,7 +69,7 @@ def main():
 
     try:
         response_script = client.chat.completions.create(
-            model="Qwen/QwQ-32B",
+            model="Qwen/Qwen2.5-Coder-32B-Instruct",
             max_tokens=8192,
             temperature=0.6,
             top_p=0.95,
@@ -108,7 +108,7 @@ def main():
 
     try:
         response_code = client.chat.completions.create(
-            model="Qwen/QwQ-32B",
+            model="Qwen/Qwen2.5-Coder-32B-Instruct",
             max_tokens=8192,
             temperature=0.6,
             top_p=0.95,

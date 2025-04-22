@@ -16,7 +16,7 @@ class Chunky():
         
     def basic_response(self, prompt):
         response = self.client.chat.completions.create(
-            model="Qwen/QwQ-32B",
+            model="Qwen/Qwen2.5-Coder-32B-Instruct",
             messages=[
                 {
                     "role": "user",
@@ -32,7 +32,7 @@ class Chunky():
             encoded_image = base64.b64encode(image_file.read()).decode("utf-8")
             
         response = self.client.chat.completions.create(
-            model="google/gemma-3-27b-it",
+            model="Qwen/Qwen2.5-Coder-32B-Instruct",
             max_tokens=100,
             temperature=self.temperature,
             messages=[
