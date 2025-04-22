@@ -241,3 +241,24 @@ def handle_chat():
         response_data["session_id"] = chat_session_id
         
     return jsonify(response_data), 200
+
+@chat_bp.route("/serve_local_file", methods=["GET"])
+def serve_local_file():
+    file_path = request.args.get("path")
+    if not file_path:
+        return jsonify({"error": "Missing file path parameter"}), 400
+    
+    try:
+        # Security check to prevent directory traversal
+        if ".." in file_path or file_path.startswith("/"):
+            return jsonify({"error": "Invalid file path"}), 403
+        
+        # Check if file exists
+        if not os.path.exists(file_path):
+            return jsonify({"error": "File not found"}), 404
+            
+        # Return the file
+        return send_file(file_path)
+    except Exception as e:
+        print(f"Error serving local file: {e}")
+        return jsonify({"error": str(e)}), 500

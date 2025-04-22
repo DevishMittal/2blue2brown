@@ -115,6 +115,45 @@ export default function ChatWindow({
   }, []);
 
   useEffect(() => {
+    const loadSessionMessages = async () => {
+      if (currentSession?.id && !newSession) {
+        try {
+          const response = await fetch(
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/get_chat_histories?chat_session_id=${currentSession.id}`
+          );
+          const messages = await response.json();
+          
+          // Process messages to ensure video URLs are properly set
+          const processedMessages = messages.map((msg: {
+            id: string;
+            chat_session_id: string;
+            sender: "user" | "ai";
+            message: string;
+            video_url?: string;
+            image_url?: string;
+            time_created: string;
+          }) => ({
+            id: msg.id,
+            session_id: msg.chat_session_id,
+            sender: msg.sender,
+            message: msg.message,
+            videoUrl: msg.video_url,
+            imageUrl: msg.image_url,
+            time_created: msg.time_created,
+            file: null
+          }));
+          
+          setMessageHistory(processedMessages);
+        } catch (error) {
+          console.error("Error loading chat history:", error);
+        }
+      }
+    };
+    
+    loadSessionMessages();
+  }, [currentSession?.id, newSession]);
+
+  useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messageHistory]);
 
@@ -268,6 +307,8 @@ export default function ChatWindow({
                           src={
                             msg.videoUrl.startsWith('/api') 
                               ? `${process.env.NEXT_PUBLIC_BACKEND_URL}${msg.videoUrl}`
+                              : msg.videoUrl.startsWith('local://')
+                              ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/serve_local_file?path=${encodeURIComponent(msg.videoUrl.replace('local://', ''))}`
                               : msg.videoUrl
                           } 
                           type="video/mp4" 

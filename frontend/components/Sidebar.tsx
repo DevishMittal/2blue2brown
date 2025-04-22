@@ -78,8 +78,29 @@ export default function Sidebar({
     );
     const history_result = await history_response.json();
 
+    // Process messages to include video URLs properly
+    const processedMessages = history_result.map((msg: {
+      id: string;
+      chat_session_id: string;
+      sender: "user" | "ai";
+      message: string;
+      video_url?: string;
+      image_url?: string;
+      time_created: string;
+    }) => ({
+      id: msg.id,
+      session_id: msg.chat_session_id,
+      sender: msg.sender,
+      message: msg.message,
+      videoUrl: msg.video_url,
+      imageUrl: msg.image_url,
+      time_created: msg.time_created,
+      file: null
+    }));
+
     setCurrentSession(session_result[0]);
-    setMessageHistory(history_result);
+    setMessageHistory(processedMessages);
+    setNewSession(false);
   };
 
   const handleNewSession = async () => {
