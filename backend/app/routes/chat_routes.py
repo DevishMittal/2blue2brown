@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, send_file
 from app.services.supabase import post_message, get_chat_histories, create_new_session
 from app.controllers import Chunky, build_graph
 import os
@@ -262,4 +262,5 @@ def serve_local_file():
         return send_file(file_path)
     except Exception as e:
         print(f"Error serving local file: {e}")
+
         return jsonify({"error": str(e)}), 500

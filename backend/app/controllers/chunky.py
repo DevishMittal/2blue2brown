@@ -59,7 +59,7 @@ class Chunky():
     def advanced_image_handling(self, prompt, image_bytes):
         print("Prompt:", prompt)
         response = self.client.chat.completions.create(
-            model="google/gemma-3-27b-it",
+            model="Qwen/Qwen2.5-Coder-32B-Instruct",
             temperature=0,
             messages=[
                 {
