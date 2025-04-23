@@ -60,8 +60,66 @@ class VideoMaker:
         return video_path
     
     def _add_voiceover_to_video(self, video_path):
-        """Add voiceover to the video using VoiceOverMaker"""
+        """Add voiceover to the video using either educational or simple voiceovers"""
         try:
+            # Try the educational voiceover approach first
+            from app.controllers.enhanced_voiceover import EnhancedVoiceover
+            
+            print("Using enhanced educational voiceover for high-quality narrative explanations")
+            
+            # Create enhanced voiceover maker instance
+            enhanced_voiceover = EnhancedVoiceover(
+                script_file=self.script_file,
+                scene_name=self.scene_name
+            )
+            
+            # Generate output filename with session_id for uniqueness
+            if self.session_id:
+                output_dir = os.path.dirname(video_path)
+                timestamp = int(datetime.now().timestamp())
+                basename = f"video_{self.session_id}_{timestamp}_with_enhanced_audio.mp4"
+                output_path = os.path.join(output_dir, basename)
+            else:
+                output_path = None
+                
+            # Add enhanced voiceover to video
+            return enhanced_voiceover.add_voiceover_to_video(video_path, output_path)
+            
+        except Exception as e:
+            print(f"Enhanced voiceover generation failed: {e}")
+            print("Falling back to synchronized voiceover...")
+            
+            # Fall back to synchronized voiceover
+            try:
+                from app.controllers.synchronized_voiceover import SynchronizedVoiceover
+                
+                # Create synchronized voiceover maker instance
+                sync_voiceover = SynchronizedVoiceover(
+                    script_file=self.script_file,
+                    scene_name=self.scene_name
+                )
+                
+                # Parse the script for animations and timing
+                if sync_voiceover.parse_script():
+                    print("Using synchronized voiceover for timing-matched audio")
+                    
+                    # Generate output filename
+                    if self.session_id:
+                        output_dir = os.path.dirname(video_path)
+                        timestamp = int(datetime.now().timestamp())
+                        basename = f"video_{self.session_id}_{timestamp}_with_sync_audio.mp4"
+                        output_path = os.path.join(output_dir, basename)
+                    else:
+                        output_path = None
+                        
+                    return sync_voiceover.add_voiceover_to_video(video_path, output_path)
+            except Exception as e:
+                print(f"Synchronized voiceover failed: {e}")
+            
+            # Last resort: simple voiceover
+            print("Using simple voiceover as fallback")
+            from app.controllers.voiceover_maker import VoiceOverMaker
+            
             # Create voiceover maker instance
             voiceover_maker = VoiceOverMaker()
             
@@ -77,7 +135,7 @@ class VideoMaker:
             
             # Combine with video
             if voiceover_maker.output_path and os.path.exists(voiceover_maker.output_path):
-                # Generate output filename with session_id for uniqueness
+                # Generate output filename
                 if self.session_id:
                     output_dir = os.path.dirname(video_path)
                     timestamp = int(datetime.now().timestamp())
@@ -130,14 +188,14 @@ class VideoMaker:
             
             print(f"Executing command: {' '.join(command)}")
             
-            # Execute the command
+            # Execute the command with increased timeout (600 seconds = 10 minutes)
             process = subprocess.run(command, 
                                    check=False, 
                                    capture_output=True, 
                                    text=True,
                                    encoding='utf-8',
                                    errors='replace',
-                                   timeout=120)  # 2-minute timeout
+                                   timeout=600)  # Increased timeout from 120 to 600 seconds
             
             if process.returncode != 0:
                 print(f"Manim error: {process.stderr}")
@@ -273,7 +331,7 @@ class VideoMaker:
             
             if os.path.exists(fallback_path):
                 return fallback_path
-                
+ 
             # If that fails, try even simpler version
             ffmpeg_cmd = [
                 "ffmpeg", "-y",

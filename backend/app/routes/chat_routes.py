@@ -61,7 +61,7 @@ def get_chat():
 
 @chat_bp.route("/chat", methods=["POST"])
 def handle_chat():
-    from app.controllers import build_graph
+    from app.controllers.langgraph_flow import build_graph
     from app.controllers.combiner import CombinedCodeGenerator
     from app.controllers.video_maker import VideoMaker
     import traceback
