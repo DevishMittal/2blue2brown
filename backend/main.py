@@ -17,7 +17,6 @@ from app.langgraph_nodes.chat_response import chat_response
 # Import supporting controllers.
 from app.controllers.combiner import CombinedCodeGenerator
 from app.controllers.video_maker import VideoMaker
-from app.controllers.voiceover_maker import VoiceOverMaker
 
 def execute_pipeline(state):
     # Run load_context node.
@@ -40,10 +39,17 @@ def main():
     user_prompt = input("Enter a concept you'd like explained: ")
     
     # Initial pipeline state.
-    state = {
+    state = { 
         "user_input": user_prompt,
-        "session_id": None  # No DB context for this demo.
+        "session_id": None,
+        "content_structure": {
+            "introduction": True,
+            "core_concepts": True,
+            "visual_examples": True,
+            "real_world_applications": True,
+            "summary": True
     }
+}
     
     # Execute the pipeline.
     final_state = execute_pipeline(state)
@@ -57,32 +63,29 @@ def main():
         combined_file = combiner.save_to_file(folder="generated_manim", filename="manim.py")
         print(f"Combined Manim script saved to: {combined_file}")
         
-        # Render the video using VideoMaker.
+        # Generate a session_id if one doesn't exist
+        session_id = final_state.get("session_id") or int(time.time())
+        
+        # Render the video using VideoMaker with voiceover
         video_maker = VideoMaker(
             script_file=combined_file,
-            scene_name=f"LSTMScene{int(time.time())}",  # The generated code defines a class called LSTMScene.
+            scene_name="LSTMScene",
             quality="l",             # Use 'l' (low) quality flag.
-            preview=False
+            preview=False,
+            session_id=session_id
         )
-        video_maker.render_video()
-        print("Video rendering complete. Check the media folder for the output MP4.")
         
-        # Determine the rendered video file.
-        # In your logs, Manim saved the video here:
-        video_file = os.path.join("media", "videos", "manim", "480p15", f"LSTMScene{int(time.time())}.mp4")
+        # Get the script text for voiceover
+        script_text = final_state.get("chat_response", "")
         
-        # Use the director's response as the voiceover script.
-        script_text = final_state.get("chat_response", "No voiceover script available")
+        # Extract AI response if no chat response available
+        if not script_text:
+            script_text = video_maker.ai_response
         
-        # Generate the voiceover using Coqui TTS.
-        voiceover_maker = VoiceOverMaker(script_text=script_text, output_audio_file="voiceover.wav")
-        voiceover_maker.generate_voiceover()
+        # Render video with automatic voiceover integration
+        video_file = video_maker.render_video(add_voiceover=True)
         
-        # Merge the audio with the video.
-        merged_video_file = os.path.join("media", "videos", "manim", "480p15", "LSTMScene_with_voiceover.mp4")
-        voiceover_maker.merge_audio_video(video_file=video_file, output_file=merged_video_file)
-        
-        print("Final video with voiceover is ready:", merged_video_file)
+        print(f"Video file path: {video_file}")
     else:
         # If no video was generated, just output the chat response.
         print("No video generated. The chat response is:\n")

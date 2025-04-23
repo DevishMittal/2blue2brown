@@ -307,9 +307,10 @@ export default function ChatWindow({
                           src={
                             msg.videoUrl.startsWith('/api') 
                               ? `${process.env.NEXT_PUBLIC_BACKEND_URL}${msg.videoUrl}`
-                              : msg.videoUrl.startsWith('local://') 
-                                ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/serve_local_file?path=${encodeURIComponent(msg.videoUrl.replace('local://', ''))}`
-                                : msg.videoUrl
+
+                              : msg.videoUrl.startsWith('local://')
+                              ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/serve_local_file?path=${encodeURIComponent(msg.videoUrl.replace('local://', ''))}`
+                              : msg.videoUrl
                           } 
                           type="video/mp4" 
                         />

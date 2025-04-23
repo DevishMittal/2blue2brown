@@ -176,11 +176,12 @@ def handle_chat():
                 script_file=combined_file,
                 scene_name=scene_name,
                 quality='l',
-                preview=False
+                preview=False,
+                session_id=chat_session_id
             )
 
-            # Get the video file path from render_video()
-            video_file = video_maker.render_video()
+            # Get the video file path from render_video() with voiceover
+            video_file = video_maker.render_video(add_voiceover=True)
             print(f"Video file path: {video_file}")
 
             if video_file and os.path.exists(video_file):
@@ -261,4 +262,5 @@ def serve_local_file():
         return send_file(file_path)
     except Exception as e:
         print(f"Error serving local file: {e}")
+
         return jsonify({"error": str(e)}), 500
